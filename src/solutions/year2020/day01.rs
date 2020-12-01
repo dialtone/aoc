@@ -44,6 +44,7 @@ pub fn parse(s: String) -> Vec<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn day01_test() {
         let expense_report = vec![1721, 979, 366, 299, 675, 1456];
@@ -57,5 +58,19 @@ mod tests {
         let expense_report = parse(input);
         assert_eq!(part1(&expense_report), 876459);
         assert_eq!(part2(&expense_report), 116168640);
+    }
+}
+
+#[cfg(test)]
+mod benches {
+    extern crate test;
+
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn bench(b: &mut Bencher) {
+        let expenses = parse(get_input(2020, 1).unwrap());
+        b.iter(|| (part1(&expenses), part2(&expenses)));
     }
 }

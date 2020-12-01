@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn part1(input: &Vec<u32>) -> u32 {
-    // 1,397,533 ns/iter (+/- 197,759) for both parts
+    // time:   [17.688 us 17.823 us 17.961 us]
     // let m = input
     //     .iter()
     //     .tuple_combinations::<(_, _)>()
@@ -9,7 +9,7 @@ pub fn part1(input: &Vec<u32>) -> u32 {
     //     .unwrap();
     // return m.0 * m.1;
 
-    // 469,291 ns/iter (+/- 89,727) for both parts
+    // time:   [8.2207 us 8.3451 us 8.4806 us]
     let l = input.len();
     for i in 0..l {
         for j in (i + 1)..l {
@@ -22,6 +22,7 @@ pub fn part1(input: &Vec<u32>) -> u32 {
 }
 
 pub fn part2(input: &Vec<u32>) -> u32 {
+    // time:   [1.5358 ms 1.5452 ms 1.5560 ms]
     // let m = input
     //     .iter()
     //     .tuple_combinations::<(_, _, _)>()
@@ -29,6 +30,7 @@ pub fn part2(input: &Vec<u32>) -> u32 {
     //     .unwrap();
     // return m.0 * m.1 * m.2;
 
+    // time:   [478.39 us 485.00 us 492.58 us]
     let l = input.len();
     for i in 0..(l - 2) {
         for j in (i + 1)..(l - 1) {
@@ -66,19 +68,5 @@ mod tests {
         let expense_report = parse(input);
         assert_eq!(part1(&expense_report), 876459);
         assert_eq!(part2(&expense_report), 116168640);
-    }
-}
-
-#[cfg(test)]
-mod benches {
-    extern crate test;
-
-    use super::*;
-    use test::Bencher;
-
-    #[bench]
-    fn bench(b: &mut Bencher) {
-        let expenses = parse(get_input(2020, 1).unwrap());
-        b.iter(|| (part1(&expenses), part2(&expenses)));
     }
 }

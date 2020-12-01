@@ -1,4 +1,4 @@
 #![feature(test)]
 
-mod input;
+pub mod input;
 pub mod solutions;

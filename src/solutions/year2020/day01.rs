@@ -1,35 +1,43 @@
 use super::*;
 
 pub fn part1(input: &Vec<u32>) -> u32 {
+    // 1,397,533 ns/iter (+/- 197,759) for both parts
+    // let m = input
+    //     .iter()
+    //     .tuple_combinations::<(_, _)>()
+    //     .find(|x| x.0 + x.1 == 2020)
+    //     .unwrap();
+    // return m.0 * m.1;
+
+    // 469,291 ns/iter (+/- 89,727) for both parts
     let l = input.len();
-    let mut start = 0;
-    while start < l {
-        for i in start..l {
-            for j in (i + 1)..l {
-                if input[i] + input[j] == 2020 {
-                    return input[i] * input[j];
-                }
+    for i in 0..l {
+        for j in (i + 1)..l {
+            if input[i] + input[j] == 2020 {
+                return input[i] * input[j];
             }
         }
-        start = start + 1;
     }
     return 0;
 }
 
 pub fn part2(input: &Vec<u32>) -> u32 {
+    // let m = input
+    //     .iter()
+    //     .tuple_combinations::<(_, _, _)>()
+    //     .find(|x| x.0 + x.1 + x.2 == 2020)
+    //     .unwrap();
+    // return m.0 * m.1 * m.2;
+
     let l = input.len();
-    let mut start = 0;
-    while start < l {
-        for i in start..(l - 2) {
-            for j in (i + 1)..(l - 1) {
-                for k in (j + 1)..l {
-                    if input[i] + input[j] + input[k] == 2020 {
-                        return input[i] * input[j] * input[k];
-                    }
+    for i in 0..(l - 2) {
+        for j in (i + 1)..(l - 1) {
+            for k in (j + 1)..l {
+                if input[i] + input[j] + input[k] == 2020 {
+                    return input[i] * input[j] * input[k];
                 }
             }
         }
-        start = start + 1;
     }
     return 0;
 }

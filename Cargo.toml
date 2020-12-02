@@ -17,6 +17,10 @@ harness = false
 reqwest = { version = "0.10", features = [ "blocking", "gzip", "cookies" ] }
 thiserror = "1.0"
 itertools = "0.9"
+regex = "1"
+bytecount = "0.6"
+lazy_static = "1.4"
+serde_scan = "0.4.1"
 
 [dev-dependencies]
 criterion = "0.3"

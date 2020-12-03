@@ -20,12 +20,11 @@ pub fn part1(input: &String) -> usize {
 
 pub fn part2(input: &String) -> usize {
     let slopes = vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
+    let (max_rows, max_cols, map) = parse(input);
 
     let mut result = 1;
     for slope in slopes {
         let mut current = (0, 0);
-
-        let (max_rows, max_cols, map) = parse(input);
 
         let mut trees = 0;
         while current.1 <= (max_rows + 1) {

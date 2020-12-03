@@ -1,59 +1,50 @@
 use super::*;
-use std::collections::HashSet;
 
-pub fn part1(input: &String) -> usize {
+pub fn part1(map: &Vec<Vec<bool>>) -> usize {
     let slope = (3, 1);
+    count_trees(map, slope)
+}
+
+fn count_trees(map: &Vec<Vec<bool>>, slope: (usize, usize)) -> usize {
+    let max_cols = map[0].len();
+    let max_rows = map.len();
     let mut current = (0, 0);
 
-    let (max_rows, max_cols, map) = parse(input);
-
     let mut trees = 0;
-    while current.1 <= (max_rows + 1) {
-        if map.contains(&current) {
+    while current.1 < max_rows {
+        if map[current.1][current.0] {
             trees += 1;
         }
         current = ((current.0 + slope.0) % max_cols, current.1 + slope.1);
     }
-
     trees
 }
 
-pub fn part2(input: &String) -> usize {
+pub fn part2(map: &Vec<Vec<bool>>) -> usize {
     let slopes = vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
-    let (max_rows, max_cols, map) = parse(input);
 
     let mut result = 1;
     for slope in slopes {
-        let mut current = (0, 0);
-
-        let mut trees = 0;
-        while current.1 <= (max_rows + 1) {
-            if map.contains(&current) {
-                trees += 1;
-            }
-            current = ((current.0 + slope.0) % max_cols, current.1 + slope.1);
-        }
-
-        result *= trees;
+        result *= count_trees(map, slope);
     }
 
     result
 }
 
-pub fn parse(s: &String) -> (usize, usize, HashSet<(usize, usize)>) {
-    let mut map = HashSet::new();
-    let mut max_rows = 0;
-    let mut max_cols = 0;
-    for (i, line) in s.lines().enumerate() {
-        for (j, position) in line.chars().enumerate() {
+pub fn parse(s: &String) -> Vec<Vec<bool>> {
+    let mut map = Vec::with_capacity(s.lines().count());
+    for line in s.lines() {
+        let mut row = Vec::with_capacity(line.len());
+        for position in line.chars() {
             if position == '#' {
-                map.insert((j, i));
+                row.push(true);
+            } else {
+                row.push(false);
             }
-            max_cols = j;
         }
-        max_rows = i;
+        map.push(row);
     }
-    (max_rows + 1, max_cols + 1, map)
+    map
 }
 
 #[cfg(test)]
@@ -61,7 +52,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn day02_test() {
+    fn day03_test() {
         let test_input = "..##.........##.........##.........##.........##.........##.......
 #...#...#..#...#...#..#...#...#..#...#...#..#...#...#..#...#...#..
 .#....#..#..#....#..#..#....#..#..#....#..#..#....#..#..#....#..#.
@@ -74,14 +65,14 @@ mod tests {
 #...##....##...##....##...##....##...##....##...##....##...##....#
 .#..#...#.#.#..#...#.#.#..#...#.#.#..#...#.#.#..#...#.#.#..#...#.#"
             .to_owned();
-        assert_eq!(part1(&test_input), 7);
-        assert_eq!(part2(&test_input), 336);
+        assert_eq!(part1(&parse(&test_input)), 7);
+        assert_eq!(part2(&parse(&test_input)), 336);
     }
 
     #[test]
-    fn day02() {
+    fn day03() {
         let input = get_input(2020, 3).unwrap();
-        assert_eq!(part1(&input), 145);
-        assert_eq!(part2(&input), 3424528800);
+        assert_eq!(part1(&parse(&input)), 145);
+        assert_eq!(part2(&parse(&input)), 3424528800);
     }
 }

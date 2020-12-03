@@ -9,6 +9,7 @@ pub fn parse(s: &String) {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::*;
 
     #[test]
     fn day04_test() {

@@ -1,5 +1,3 @@
-use super::*;
-
 pub fn part1(input: &Vec<u32>) -> u32 {
     // time:   [17.688 us 17.823 us 17.961 us]
     // let m = input
@@ -54,6 +52,7 @@ pub fn parse(s: String) -> Vec<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::*;
 
     #[test]
     fn day01_test() {

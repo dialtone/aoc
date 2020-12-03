@@ -1,5 +1,3 @@
-use super::*;
-
 pub fn part1(map: &Vec<Vec<bool>>) -> usize {
     let slope = (3, 1);
     count_trees(map, slope)
@@ -50,6 +48,7 @@ pub fn parse(s: &String) -> Vec<Vec<bool>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::*;
 
     #[test]
     fn day03_test() {

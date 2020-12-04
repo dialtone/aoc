@@ -2,7 +2,6 @@
 // day4 part 1             time:   [27.518 us 27.814 us 28.163 us]
 // day4 part 2             time:   [40.731 us 41.412 us 42.272 us]
 
-use super::*;
 use std::collections::BTreeMap;
 
 static KEYS: [&str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];

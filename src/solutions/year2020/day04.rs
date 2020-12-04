@@ -1,3 +1,7 @@
+// day4 parse              time:   [895.51 us 911.15 us 926.48 us]
+// day4 part 1             time:   [37.417 us 37.886 us 38.490 us]
+// day4 part 2             time:   [45.970 us 46.317 us 46.692 us]
+
 use super::*;
 use std::collections::HashMap;
 
@@ -40,6 +44,19 @@ pub fn part2(input: &Vec<HashMap<&str, &str>>) -> usize {
     valid
 }
 
+fn passport_valid(passport: &HashMap<&str, &str>) -> bool {
+    for key in KEYS.iter() {
+        if let Some(value) = passport.get(key) {
+            if !validate(key, *value) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    true
+}
+
 fn validate(key: &str, value: &str) -> bool {
     match key {
         "byr" => (1920..=2002).contains(&value.parse::<u32>().unwrap()),
@@ -60,19 +77,6 @@ fn validate(key: &str, value: &str) -> bool {
         "pid" => value.len() == 9 && value.chars().all(|c| c.is_numeric()),
         _ => false,
     }
-}
-
-fn passport_valid(passport: &HashMap<&str, &str>) -> bool {
-    for key in KEYS.iter() {
-        if let Some(value) = passport.get(key) {
-            if !validate(key, *value) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-    true
 }
 
 #[cfg(test)]
@@ -132,6 +136,6 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719"
     fn day04() {
         let input = get_input(2020, 4).unwrap();
         assert_eq!(part1(&parse(&input)), 239);
-        assert_eq!(part2(&parse(&input)), 189);
+        assert_eq!(part2(&parse(&input)), 188);
     }
 }

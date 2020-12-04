@@ -1,7 +1,8 @@
 use super::*;
 use std::collections::HashMap;
 
-const KEYS: [&str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
+static KEYS: [&str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
+static ECL_VALS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
 
 pub fn parse(s: &String) -> Vec<HashMap<&str, &str>> {
     let mut passports = Vec::new();
@@ -40,46 +41,25 @@ pub fn part2(input: &Vec<HashMap<&str, &str>>) -> usize {
 }
 
 fn validate(key: &str, value: &str) -> bool {
-    let func = match key {
-        "byr" => validate_byr,
-        "iyr" => validate_iyr,
-        "eyr" => validate_eyr,
-        "hgt" => validate_hgt,
-        "hcl" => validate_hcl,
-        "ecl" => validate_ecl,
-        "pid" => validate_pid,
-        _ => return false,
-    };
-    let v = func(value);
-    v
-}
-
-fn validate_byr(value: &str) -> bool {
-    (1920..=2002).contains(&value.parse::<u32>().unwrap())
-}
-fn validate_iyr(value: &str) -> bool {
-    (2010..=2020).contains(&value.parse::<u32>().unwrap())
-}
-fn validate_eyr(value: &str) -> bool {
-    (2020..=2030).contains(&value.parse::<u32>().unwrap())
-}
-fn validate_hgt(value: &str) -> bool {
-    value.ends_with("cm")
-        && (150..=193).contains(&value[..value.len() - 2].parse::<usize>().unwrap())
-        || value.ends_with("in")
-            && (59..=76).contains(&value[..value.len() - 2].parse::<usize>().unwrap())
-}
-
-fn validate_hcl(value: &str) -> bool {
-    value.len() == 7 && value.starts_with("#") && value[1..].chars().all(|c| c.is_ascii_hexdigit())
-}
-
-static ECL_VALS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
-fn validate_ecl(value: &str) -> bool {
-    ECL_VALS.contains(&value)
-}
-fn validate_pid(value: &str) -> bool {
-    value.len() == 9 && value.chars().all(|c| c.is_numeric())
+    match key {
+        "byr" => (1920..=2002).contains(&value.parse::<u32>().unwrap()),
+        "iyr" => (2010..=2020).contains(&value.parse::<u32>().unwrap()),
+        "eyr" => (2020..=2030).contains(&value.parse::<u32>().unwrap()),
+        "hgt" => {
+            value.ends_with("cm")
+                && (150..=193).contains(&value[..value.len() - 2].parse::<usize>().unwrap())
+                || value.ends_with("in")
+                    && (59..=76).contains(&value[..value.len() - 2].parse::<usize>().unwrap())
+        }
+        "hcl" => {
+            value.len() == 7
+                && value.starts_with("#")
+                && value[1..].chars().all(|c| c.is_ascii_hexdigit())
+        }
+        "ecl" => ECL_VALS.contains(&value),
+        "pid" => value.len() == 9 && value.chars().all(|c| c.is_numeric()),
+        _ => false,
+    }
 }
 
 fn passport_valid(passport: &HashMap<&str, &str>) -> bool {

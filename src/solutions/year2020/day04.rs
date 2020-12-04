@@ -1,17 +1,17 @@
-// day4 parse              time:   [895.51 us 911.15 us 926.48 us]
-// day4 part 1             time:   [37.417 us 37.886 us 38.490 us]
-// day4 part 2             time:   [45.970 us 46.317 us 46.692 us]
+// day4 parse              time:   [753.47 us 758.95 us 765.43 us]
+// day4 part 1             time:   [27.518 us 27.814 us 28.163 us]
+// day4 part 2             time:   [40.731 us 41.412 us 42.272 us]
 
 use super::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 static KEYS: [&str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 static ECL_VALS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
 
-pub fn parse(s: &String) -> Vec<HashMap<&str, &str>> {
+pub fn parse(s: &String) -> Vec<BTreeMap<&str, &str>> {
     let mut passports = Vec::new();
     for lines in s.split("\n\n") {
-        let mut passport = HashMap::new();
+        let mut passport = BTreeMap::new();
         for line in lines.lines() {
             for field in line.split(" ") {
                 let key_value: Vec<&str> = field.split(":").collect();
@@ -23,7 +23,7 @@ pub fn parse(s: &String) -> Vec<HashMap<&str, &str>> {
     passports
 }
 
-pub fn part1(input: &Vec<HashMap<&str, &str>>) -> usize {
+pub fn part1(input: &Vec<BTreeMap<&str, &str>>) -> usize {
     let mut valid = 0;
     for passport in input {
         if KEYS.iter().any(|key| !passport.contains_key(key)) {
@@ -34,7 +34,7 @@ pub fn part1(input: &Vec<HashMap<&str, &str>>) -> usize {
     valid
 }
 
-pub fn part2(input: &Vec<HashMap<&str, &str>>) -> usize {
+pub fn part2(input: &Vec<BTreeMap<&str, &str>>) -> usize {
     let mut valid = 0;
     for passport in input {
         if passport_valid(passport) {
@@ -44,7 +44,7 @@ pub fn part2(input: &Vec<HashMap<&str, &str>>) -> usize {
     valid
 }
 
-fn passport_valid(passport: &HashMap<&str, &str>) -> bool {
+fn passport_valid(passport: &BTreeMap<&str, &str>) -> bool {
     for key in KEYS.iter() {
         if let Some(value) = passport.get(key) {
             if !validate(key, *value) {

@@ -1,10 +1,99 @@
 use super::*;
+use std::collections::HashMap;
 
-pub fn part1(input: &String) {}
+const KEYS: [&str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
-pub fn part2(input: &String) {}
+pub fn parse(s: &String) -> Vec<HashMap<&str, &str>> {
+    let mut passports = Vec::new();
+    for lines in s.split("\n\n") {
+        let mut passport = HashMap::new();
+        for line in lines.lines() {
+            for field in line.split(" ") {
+                let key_value: Vec<&str> = field.split(":").collect();
+                passport.insert(key_value[0], key_value[1]);
+            }
+        }
+        passports.push(passport);
+    }
+    passports
+}
 
-pub fn parse(s: &String) {}
+pub fn part1(input: &Vec<HashMap<&str, &str>>) -> usize {
+    let mut valid = 0;
+    for passport in input {
+        if KEYS.iter().any(|key| !passport.contains_key(key)) {
+            continue;
+        }
+        valid += 1;
+    }
+    valid
+}
+
+pub fn part2(input: &Vec<HashMap<&str, &str>>) -> usize {
+    let mut valid = 0;
+    for passport in input {
+        if passport_valid(passport) {
+            valid += 1;
+        }
+    }
+    valid
+}
+
+fn validate(key: &str, value: &str) -> bool {
+    let func = match key {
+        "byr" => validate_byr,
+        "iyr" => validate_iyr,
+        "eyr" => validate_eyr,
+        "hgt" => validate_hgt,
+        "hcl" => validate_hcl,
+        "ecl" => validate_ecl,
+        "pid" => validate_pid,
+        _ => return false,
+    };
+    let v = func(value);
+    v
+}
+
+fn validate_byr(value: &str) -> bool {
+    (1920..=2002).contains(&value.parse::<u32>().unwrap())
+}
+fn validate_iyr(value: &str) -> bool {
+    (2010..=2020).contains(&value.parse::<u32>().unwrap())
+}
+fn validate_eyr(value: &str) -> bool {
+    (2020..=2030).contains(&value.parse::<u32>().unwrap())
+}
+fn validate_hgt(value: &str) -> bool {
+    value.ends_with("cm")
+        && (150..=193).contains(&value[..value.len() - 2].parse::<usize>().unwrap())
+        || value.ends_with("in")
+            && (59..=76).contains(&value[..value.len() - 2].parse::<usize>().unwrap())
+}
+
+fn validate_hcl(value: &str) -> bool {
+    value.len() == 7 && value.starts_with("#") && value[1..].chars().all(|c| c.is_ascii_hexdigit())
+}
+
+static ECL_VALS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
+fn validate_ecl(value: &str) -> bool {
+    ECL_VALS.contains(&value)
+}
+fn validate_pid(value: &str) -> bool {
+    value.len() == 9 && value.chars().all(|c| c.is_numeric())
+}
+
+fn passport_valid(passport: &HashMap<&str, &str>) -> bool {
+    for key in KEYS.iter() {
+        if let Some(value) = passport.get(key) {
+            if !validate(key, *value) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    true
+}
 
 #[cfg(test)]
 mod tests {
@@ -13,15 +102,56 @@ mod tests {
 
     #[test]
     fn day04_test() {
-        // let test_input = "".to_owned();
-        // assert_eq!(part1(&test_input), 7);
-        // assert_eq!(part2(&test_input), 336);
+        let test_input = "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+byr:1937 iyr:2017 cid:147 hgt:183cm
+
+iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
+hcl:#cfa07d byr:1929
+
+hcl:#ae17e1 iyr:2013
+eyr:2024
+ecl:brn pid:760753108 byr:1931
+hgt:179cm
+
+hcl:#cfa07d eyr:2025 pid:166559648
+iyr:2011 ecl:brn hgt:59in"
+            .to_owned();
+        assert_eq!(part1(&parse(&test_input)), 2);
+        let invalid_input = "eyr:1972 cid:100
+hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
+
+iyr:2019
+hcl:#602927 eyr:1967 hgt:170cm
+ecl:grn pid:012533040 byr:1946
+
+hcl:dab227 iyr:2012
+ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277
+
+hgt:59cm ecl:zzz
+eyr:2038 hcl:74454a iyr:2023
+pid:3556412378 byr:2007"
+            .to_owned();
+        assert_eq!(part2(&parse(&invalid_input)), 0);
+        let valid_input = "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+hcl:#623a2f
+
+eyr:2029 ecl:blu cid:129 byr:1989
+iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm
+
+hcl:#888785
+hgt:164cm byr:2001 iyr:2015 cid:88
+pid:545766238 ecl:hzl
+eyr:2022
+
+iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719"
+            .to_owned();
+        assert_eq!(part2(&parse(&valid_input)), 4);
     }
 
     #[test]
     fn day04() {
-        // let input = get_input(2020, 4).unwrap();
-        // assert_eq!(part1(&input), 145);
-        // assert_eq!(part2(&input), 3424528800);
+        let input = get_input(2020, 4).unwrap();
+        assert_eq!(part1(&parse(&input)), 239);
+        assert_eq!(part2(&parse(&input)), 189);
     }
 }

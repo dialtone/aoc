@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
-use aoc::solutions::year2020::day03::{parse, part1, part2};
+use aoc::solutions::year2020::day04::{parse, part1, part2};
 
 fn bench_day4(c: &mut Criterion) {
     let raw_input = aoc::input::get_input(2020, 4).unwrap();

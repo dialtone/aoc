@@ -74,9 +74,8 @@ pub fn part2(input: &String) -> usize {
         .map(|answers| {
             answers
                 .lines()
-                .map(|row| row.chars().collect::<BTreeSet<char>>())
-                .fold(BTreeSet::from(('a'..='z').collect()), |acc, set| {
-                    acc.intersection(&set).cloned().collect::<BTreeSet<char>>()
+                .fold(BTreeSet::from(('a'..='z').collect()), |acc, row| {
+                    acc.intersection(&row.chars().collect()).cloned().collect()
                 })
                 .len()
             // let sets = answers

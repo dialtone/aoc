@@ -1,14 +1,6 @@
 use super::*;
 use std::collections::BTreeSet;
 
-// day6 part 1             time:   [656.05 us 662.19 us 670.25 us]
-// pub fn part1(input: &String) -> usize {
-//     input
-//         .split("\n\n")
-//         .map(|answers| BTreeSet::from(answers.replace(&"\n", &"").chars().collect()).len())
-//         .sum()
-// }
-
 // day6 parse              time:   [158.82 us 161.46 us 164.61 us]
 pub fn parse(input: &String) -> Vec<Vec<u32>> {
     input
@@ -42,6 +34,15 @@ pub fn part2(input: &Vec<Vec<u32>>) -> u32 {
         .sum()
 }
 
+// Pre-optimization pass
+// day6 part 1             time:   [656.05 us 662.19 us 670.25 us]
+// pub fn part1(input: &String) -> usize {
+//     input
+//         .split("\n\n")
+//         .map(|answers| BTreeSet::from(answers.replace(&"\n", &"").chars().collect()).len())
+//         .sum()
+// }
+
 // day6 part 2             time:   [1.2361 ms 1.2543 ms 1.2765 ms]
 // pub fn part2(input: &String) -> usize {
 //     input
@@ -65,7 +66,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_day02() {
+    fn test_day06() {
         let test_input = "abc
 
 a
@@ -87,7 +88,7 @@ b"
     }
 
     #[test]
-    fn day02() {
+    fn day06() {
         let input = get_input(2020, 6).unwrap();
         assert_eq!(part1(&parse(&input)), 6170);
         assert_eq!(part2(&parse(&input)), 2947);

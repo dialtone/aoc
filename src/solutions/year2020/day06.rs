@@ -1,29 +1,64 @@
 use super::*;
 use std::collections::BTreeSet;
 
-pub fn part1(input: &String) -> usize {
+// day6 part 1             time:   [656.05 us 662.19 us 670.25 us]
+// pub fn part1(input: &String) -> usize {
+//     input
+//         .split("\n\n")
+//         .map(|answers| BTreeSet::from(answers.replace(&"\n", &"").chars().collect()).len())
+//         .sum()
+// }
+
+// day6 parse              time:   [158.82 us 161.46 us 164.61 us]
+pub fn parse(input: &String) -> Vec<Vec<u32>> {
     input
         .split("\n\n")
-        .map(|answers| BTreeSet::from(answers.replace(&"\n", &"").chars().collect()).len())
+        .map(|rows| {
+            rows.lines()
+                .map(|row| row.chars().fold(0u32, |acc, c| acc | 1 << (c as u8 - b'a')))
+                .collect()
+        })
+        .collect()
+}
+
+//day6 part 1             time:   [1.3621 us 1.3807 us 1.4033 us]
+pub fn part1(input: &Vec<Vec<u32>>) -> u32 {
+    input
+        .iter()
+        .map(|group| group.iter().fold(0, |acc, n| acc | n).count_ones())
         .sum()
 }
 
-pub fn part2(input: &String) -> usize {
+// day6 part 2             time:   [1.1820 us 1.1929 us 1.2050 us]
+pub fn part2(input: &Vec<Vec<u32>>) -> u32 {
     input
-        .split("\n\n")
-        .map(|answers| {
-            let sets = answers
-                .lines()
-                .map(|row| BTreeSet::from(row.chars().collect()))
-                .collect::<Vec<BTreeSet<char>>>();
-            sets[0]
+        .iter()
+        .map(|group| {
+            group
                 .iter()
-                .filter(|k| sets[1..].iter().all(|s| s.contains(k)))
-                .collect::<Vec<&char>>()
-                .len()
+                .fold(u32::max_value(), |acc, n| acc & n)
+                .count_ones()
         })
         .sum()
 }
+
+// day6 part 2             time:   [1.2361 ms 1.2543 ms 1.2765 ms]
+// pub fn part2(input: &String) -> usize {
+//     input
+//         .split("\n\n")
+//         .map(|answers| {
+//             let sets = answers
+//                 .lines()
+//                 .map(|row| BTreeSet::from(row.chars().collect()))
+//                 .collect::<Vec<BTreeSet<char>>>();
+//             sets[0]
+//                 .iter()
+//                 .filter(|k| sets[1..].iter().all(|s| s.contains(k)))
+//                 .collect::<Vec<&char>>()
+//                 .len()
+//         })
+//         .sum()
+// }
 
 #[cfg(test)]
 mod tests {
@@ -47,14 +82,14 @@ a
 
 b"
         .to_owned();
-        assert_eq!(part1(&test_input), 11);
-        assert_eq!(part2(&&test_input), 6);
+        assert_eq!(part1(&parse(&test_input)), 11);
+        assert_eq!(part2(&parse(&test_input)), 6);
     }
 
     #[test]
     fn day02() {
         let input = get_input(2020, 6).unwrap();
-        assert_eq!(part1(&input), 6170);
-        assert_eq!(part2(&input), 2947);
+        assert_eq!(part1(&parse(&input)), 6170);
+        assert_eq!(part2(&parse(&input)), 2947);
     }
 }

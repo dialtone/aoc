@@ -13,26 +13,49 @@ pub fn parse(input: &String) -> Vec<Vec<u32>> {
         .collect()
 }
 
-//day6 part 1             time:   [1.3621 us 1.3807 us 1.4033 us]
-pub fn part1(input: &Vec<Vec<u32>>) -> u32 {
+// time:   [57.423 us 58.066 us 58.848 us]
+pub fn part1(input: &String) -> u32 {
     input
-        .iter()
-        .map(|group| group.iter().fold(0, |acc, n| acc | n).count_ones())
+        .split("\n\n")
+        .map(|rows| {
+            rows.split_whitespace()
+                .flat_map(|s| s.chars())
+                .fold(0u32, |acc, c| acc | 1 << (c as u8 - b'a'))
+        })
+        .sum()
+}
+//day6 part 1             time:   [1.3621 us 1.3807 us 1.4033 us]
+// pub fn part1(input: &Vec<Vec<u32>>) -> u32 {
+//     input
+//         .iter()
+//         .map(|group| group.iter().fold(0, |acc, n| acc | n).count_ones())
+//         .sum()
+// }
+
+// time:   [62.741 us 63.511 us 64.555 us]
+pub fn part2(input: &String) -> u32 {
+    input
+        .split("\n\n")
+        .map(|rows| {
+            rows.lines()
+                .map(|a| a.chars().fold(0u32, |acc, c| acc | 1 << (c as u8 - b'a')))
+                .fold(!0u32, |acc, c| acc & c).count_ones()
+        })
         .sum()
 }
 
 // day6 part 2             time:   [1.1820 us 1.1929 us 1.2050 us]
-pub fn part2(input: &Vec<Vec<u32>>) -> u32 {
-    input
-        .iter()
-        .map(|group| {
-            group
-                .iter()
-                .fold(u32::max_value(), |acc, n| acc & n)
-                .count_ones()
-        })
-        .sum()
-}
+// pub fn part2(input: &Vec<Vec<u32>>) -> u32 {
+//     input
+//         .iter()
+//         .map(|group| {
+//             group
+//                 .iter()
+//                 .fold(u32::max_value(), |acc, n| acc & n)
+//                 .count_ones()
+//         })
+//         .sum()
+// }
 
 // Pre-optimization pass
 // day6 part 1             time:   [656.05 us 662.19 us 670.25 us]
@@ -83,14 +106,14 @@ a
 
 b"
         .to_owned();
-        assert_eq!(part1(&parse(&test_input)), 11);
-        assert_eq!(part2(&parse(&test_input)), 6);
+        assert_eq!(part1(&test_input), 11);
+        assert_eq!(part2(&test_input), 6);
     }
 
     #[test]
     fn day06() {
         let input = get_input(2020, 6).unwrap();
-        assert_eq!(part1(&parse(&input)), 6170);
-        assert_eq!(part2(&parse(&input)), 2947);
+        assert_eq!(part1(&input), 6170);
+        assert_eq!(part2(&input), 2947);
     }
 }

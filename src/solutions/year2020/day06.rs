@@ -21,6 +21,7 @@ pub fn part1(input: &String) -> u32 {
             rows.split_whitespace()
                 .flat_map(|s| s.chars())
                 .fold(0u32, |acc, c| acc | 1 << (c as u8 - b'a'))
+                .count_ones()
         })
         .sum()
 }
@@ -33,16 +34,16 @@ pub fn part1(input: &String) -> u32 {
 // }
 
 // time:   [62.741 us 63.511 us 64.555 us]
-pub fn part2(input: &String) -> u32 {
-    input
-        .split("\n\n")
-        .map(|rows| {
-            rows.lines()
-                .map(|a| a.chars().fold(0u32, |acc, c| acc | 1 << (c as u8 - b'a')))
-                .fold(!0u32, |acc, c| acc & c).count_ones()
-        })
-        .sum()
-}
+// pub fn part2(input: &String) -> u32 {
+//     input
+//         .split("\n\n")
+//         .map(|rows| {
+//             rows.lines()
+//                 .map(|a| a.chars().fold(0u32, |acc, c| acc | 1 << (c as u8 - b'a')))
+//                 .fold(!0u32, |acc, c| acc & c).count_ones()
+//         })
+//         .sum()
+// }
 
 // day6 part 2             time:   [1.1820 us 1.1929 us 1.2050 us]
 // pub fn part2(input: &Vec<Vec<u32>>) -> u32 {
@@ -67,22 +68,29 @@ pub fn part2(input: &String) -> u32 {
 // }
 
 // day6 part 2             time:   [1.2361 ms 1.2543 ms 1.2765 ms]
-// pub fn part2(input: &String) -> usize {
-//     input
-//         .split("\n\n")
-//         .map(|answers| {
-//             let sets = answers
-//                 .lines()
-//                 .map(|row| BTreeSet::from(row.chars().collect()))
-//                 .collect::<Vec<BTreeSet<char>>>();
-//             sets[0]
-//                 .iter()
-//                 .filter(|k| sets[1..].iter().all(|s| s.contains(k)))
-//                 .collect::<Vec<&char>>()
-//                 .len()
-//         })
-//         .sum()
-// }
+pub fn part2(input: &String) -> usize {
+    input
+        .split("\n\n")
+        .map(|answers| {
+            answers
+                .lines()
+                .map(|row| row.chars().collect::<BTreeSet<char>>())
+                .fold(BTreeSet::from(('a'..='z').collect()), |acc, set| {
+                    acc.intersection(&set).cloned().collect::<BTreeSet<char>>()
+                })
+                .len()
+            // let sets = answers
+            //     .lines()
+            //     .map(|row| BTreeSet::from(row.chars().collect()))
+            //     .collect::<Vec<BTreeSet<char>>>();
+            // sets[0]
+            //     .iter()
+            //     .filter(|k| sets[1..].iter().all(|s| s.contains(k)))
+            //     .collect::<Vec<&char>>()
+            //     .len()
+        })
+        .sum()
+}
 
 #[cfg(test)]
 mod tests {

@@ -1,6 +1,6 @@
 use super::*;
 use petgraph::{graphmap::DiGraphMap, EdgeDirection::*};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashSet, VecDeque};
 
 pub fn part1(input: &DiGraphMap<&str, usize>) -> usize {
     let mut done = HashSet::new();
@@ -15,7 +15,6 @@ pub fn part1(input: &DiGraphMap<&str, usize>) -> usize {
             done.insert(bag);
         }
 
-        // done.insert(bag);
         for neigh in input.neighbors_directed(bag, Incoming) {
             queue.push_back(neigh);
         }

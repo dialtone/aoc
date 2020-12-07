@@ -75,13 +75,12 @@ pub fn parse(s: &String) -> HashMap<&str, Vec<&str>> {
             .split_once(" contain ")
             .unwrap();
         let (trimmed_bag, _) = bag.trim().rsplit_once(" ").unwrap();
-        let mut bags: Vec<(usize, &str)> = Vec::new();
         if contained_bags == "no other bags" {
             continue;
         }
         for contained_bag in contained_bags.split(",") {
             let (proper_bag, _) = contained_bag.trim().rsplit_once(" ").unwrap();
-            let (bag_number, bag_type) = proper_bag.split_once(" ").unwrap();
+            let (_, bag_type) = proper_bag.split_once(" ").unwrap();
             let entry = inverted_rules.entry(bag_type).or_insert(Vec::new());
             entry.push(trimmed_bag);
         }

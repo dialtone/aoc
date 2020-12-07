@@ -43,6 +43,7 @@ bytecount = "0.6"
 lazy_static = "1.4"
 serde_scan = "0.4.1"
 num = "0.3"
+petgraph = "0.5"
 
 [dev-dependencies]
 criterion = "0.3"

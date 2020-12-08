@@ -31,6 +31,7 @@ pub fn compute(input: &Vec<(&str, isize)>) -> (bool, isize) {
     let mut pc: isize = 0;
     let mut acc = 0;
     let mut seen = vec![false; 4096];
+
     while (pc as usize) < input.len() {
         let instruction = input[pc as usize];
         if seen[pc as usize] {

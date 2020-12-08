@@ -33,6 +33,10 @@ harness = false
 name = "day07"
 harness = false
 
+[[bench]]
+name = "day08"
+harness = false
+
 
 [dependencies]
 reqwest = { version = "0.10", features = [ "blocking", "gzip", "cookies" ] }

@@ -23,13 +23,13 @@ pub fn part1(input: &Vec<(&str, isize)>) -> isize {
 pub fn compute(input: &Vec<(&str, isize)>) -> (bool, isize) {
     let mut pc: isize = 0;
     let mut acc = 0;
-    let mut seen = BTreeSet::new();
+    let mut seen = vec![false; 4096];
     while (pc as usize) < input.len() {
         let instruction = input[pc as usize];
-        if seen.contains(&pc) {
+        if seen[pc as usize] {
             return (true, acc);
         }
-        seen.insert(pc);
+        seen[pc as usize] = true;
         match instruction {
             ("nop", _value) => pc += 1,
             ("acc", value) => {
@@ -64,8 +64,12 @@ pub fn part2(input: &Vec<(&str, isize)>) -> isize {
 pub fn parse(s: &String) -> Vec<(&str, isize)> {
     let mut program = Vec::new();
     for line in s.lines() {
-        let instruction = line.split_whitespace().collect::<Vec<&str>>();
-        program.push((instruction[0], instruction[1].parse().unwrap()))
+        // If you collect here you'll make this almost 10x slower
+        let mut instruction = line.split_whitespace();
+        program.push((
+            instruction.next().unwrap(),
+            instruction.next().unwrap().parse().unwrap(),
+        ))
     }
     program
 }

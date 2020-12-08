@@ -21,10 +21,9 @@
 //   3 (3.00%) high severe
 
 use super::*;
-use std::collections::BTreeSet;
 
 pub fn part1(input: &Vec<(&str, isize)>) -> isize {
-    let (broken, acc) = compute(input);
+    let (_, acc) = compute(input);
     acc
 }
 

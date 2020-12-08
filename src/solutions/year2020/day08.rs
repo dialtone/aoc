@@ -1,16 +1,24 @@
-// day8 parse              time:   [139.97 us 143.28 us 147.14 us]
-// Found 8 outliers among 100 measurements (8.00%)
-//   4 (4.00%) high mild
-//   4 (4.00%) high severe
-
-// day8 part 1             time:   [13.944 us 14.209 us 14.546 us]
-// Found 12 outliers among 100 measurements (12.00%)
-//   2 (2.00%) high mild
-//   10 (10.00%) high severe
-
-// day8 part 2             time:   [2.1391 ms 2.1801 ms 2.2241 ms]
-// Found 7 outliers among 100 measurements (7.00%)
+// day8 parse              time:   [21.228 us 21.599 us 22.025 us]
+//                         change: [-1.7038% +1.2016% +4.5279%] (p = 0.45 > 0.05)
+//                         No change in performance detected.
+// Found 13 outliers among 100 measurements (13.00%)
 //   7 (7.00%) high mild
+//   6 (6.00%) high severe
+
+// day8 part 1             time:   [637.10 ns 651.10 ns 667.99 ns]
+//                         change: [-0.3924% +1.2606% +3.0887%] (p = 0.20 > 0.05)
+//                         No change in performance detected.
+// Found 13 outliers among 100 measurements (13.00%)
+//   4 (4.00%) high mild
+//   9 (9.00%) high severe
+
+// day8 part 2             time:   [11.444 us 11.503 us 11.571 us]
+//                         change: [-91.669% -91.490% -91.317%] (p = 0.00 < 0.05)
+//                         Performance has improved.
+// Found 9 outliers among 100 measurements (9.00%)
+//   2 (2.00%) low mild
+//   4 (4.00%) high mild
+//   3 (3.00%) high severe
 
 use super::*;
 use std::collections::BTreeSet;
@@ -45,14 +53,26 @@ pub fn compute(input: &Vec<(&str, isize)>) -> (bool, isize) {
     (false, acc)
 }
 
-pub fn part2(input: &Vec<(&str, isize)>) -> isize {
+#[inline]
+fn swap_instruction(input: (&str, isize)) -> (&str, isize) {
+    let new_instruction = if input.0 == "jmp" { "nop" } else { "jmp" };
+    (new_instruction, input.1)
+}
+
+pub fn part2(oinput: &Vec<(&str, isize)>) -> isize {
+    let mut input = oinput.clone();
     loop {
-        for (i, (instruction, _)) in input.iter().enumerate() {
-            if instruction == &"jmp" || instruction == &"nop" {
-                let mut fixed_input = input.clone();
-                let new_instruction = if instruction == &"jmp" { "nop" } else { "jmp" };
-                fixed_input[i] = (new_instruction, fixed_input[i].1);
-                let (broken, acc) = compute(&fixed_input);
+        let mut last_changed = 600000;
+        for i in 0..=input.len() {
+            let (instruction, _) = input[i];
+            if last_changed != 600000 {
+                let new_instruction = swap_instruction(input[last_changed]);
+                input[last_changed] = new_instruction;
+            }
+            if instruction == "jmp" || instruction == "nop" {
+                last_changed = i;
+                input[i] = swap_instruction(input[i]);
+                let (broken, acc) = compute(&input);
                 if !broken {
                     return acc;
                 }

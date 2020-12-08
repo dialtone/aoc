@@ -61,17 +61,12 @@ fn swap_instruction(input: (&str, isize)) -> (&str, isize) {
 pub fn part2(oinput: &Vec<(&str, isize)>) -> isize {
     let mut input = oinput.clone();
     loop {
-        let mut last_changed = 600000;
-        for i in 0..=input.len() {
+        for i in 0..input.len() {
             let (instruction, _) = input[i];
-            if last_changed != 600000 {
-                let new_instruction = swap_instruction(input[last_changed]);
-                input[last_changed] = new_instruction;
-            }
             if instruction == "jmp" || instruction == "nop" {
-                last_changed = i;
                 input[i] = swap_instruction(input[i]);
                 let (broken, acc) = compute(&input);
+                input[i] = swap_instruction(input[i]);
                 if !broken {
                     return acc;
                 }

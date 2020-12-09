@@ -1,26 +1,35 @@
 use super::*;
 
-pub fn part1(input: &String) {}
+type Input = String;
+type Parsed = String;
 
-pub fn part2(input: &String) {}
+pub fn part1(input: &Parsed) -> usize {
+    5
+}
 
-pub fn parse(s: &String) {}
+pub fn part2(input: &Parsed) -> usize {
+    5
+}
+
+pub fn parse(s: &Input) -> &Parsed {
+    s
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_day02() {
+    fn test_day09() {
         let test_input = "".to_owned();
-        assert_eq!(part1(&parse(&test_input)));
-        assert_eq!(part2(&parse(&test_input)));
+        assert_eq!(part1(&parse(&test_input)), 5);
+        // assert_eq!(part2(&parse(&test_input)), 5);
     }
 
-    #[test]
-    fn day02() {
-        let input = get_input(2020, 5).unwrap();
-        assert_eq!(part1(&parse(&input)));
-        assert_eq!(part2(&parse(&input)));
-    }
+    // #[test]
+    // fn day09() {
+    //     let input = get_input(2020, 9).unwrap();
+    //     assert_eq!(part1(&parse(&input)), 5);
+    //     assert_eq!(part2(&parse(&input)), 5);
+    // }
 }

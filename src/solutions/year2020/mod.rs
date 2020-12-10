@@ -10,3 +10,4 @@ pub mod day07; // bags inside bags
 pub mod day07_graphlib; // with graph library
 pub mod day08; // vm
 pub mod day09;
+pub mod day10;

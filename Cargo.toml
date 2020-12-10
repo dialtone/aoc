@@ -41,6 +41,10 @@ harness = false
 name = "day09"
 harness = false
 
+[[bench]]
+name = "day10"
+harness = false
+
 [dependencies]
 reqwest = { version = "0.10", features = [ "blocking", "gzip", "cookies" ] }
 thiserror = "1.0"
@@ -51,6 +55,7 @@ lazy_static = "1.4"
 serde_scan = "0.4.1"
 num = "0.3"
 petgraph = "0.5"
+num-integer = "0.1"
 
 [dev-dependencies]
 criterion = "0.3"

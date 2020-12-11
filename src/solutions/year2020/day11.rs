@@ -1,6 +1,6 @@
-// day11 parse             time:   [43.227 us 43.738 us 44.376 us]
-// day11 part 1            time:   [7.2611 ms 7.3125 ms 7.3766 ms]
-// day11 part 2            time:   [54.527 ms 54.802 ms 55.098 ms]
+// day11 parse             time:   [43.388 us 43.630 us 43.900 us]
+// day11 part 1            time:   [7.3735 ms 7.4709 ms 7.5858 ms]
+// day11 part 2            time:   [15.363 ms 15.437 ms 15.515 ms]
 
 use super::*;
 type Input = String;

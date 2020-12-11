@@ -1,3 +1,7 @@
+// day11 parse             time:   [43.227 us 43.738 us 44.376 us]
+// day11 part 1            time:   [41.884 ms 42.233 ms 42.645 ms]
+// day11 part 2            time:   [54.527 ms 54.802 ms 55.098 ms]
+
 use super::*;
 type Input = String;
 type Parsed = Vec<Vec<char>>;
@@ -33,7 +37,7 @@ pub fn part1(oinput: &Parsed) -> usize {
             return occupied;
         }
         last_occupied = occupied;
-        printmap(&input);
+        // printmap(&input);
     }
 }
 
@@ -247,7 +251,7 @@ pub fn part2(oinput: &Parsed) -> usize {
             return occupied;
         }
         last_occupied = occupied;
-        printmap(&input);
+        // printmap(&input);
     }
 }
 

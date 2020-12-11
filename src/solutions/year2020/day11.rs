@@ -1,10 +1,21 @@
 // day11 parse             time:   [43.227 us 43.738 us 44.376 us]
-// day11 part 1            time:   [41.884 ms 42.233 ms 42.645 ms]
+// day11 part 1            time:   [7.2611 ms 7.3125 ms 7.3766 ms]
 // day11 part 2            time:   [54.527 ms 54.802 ms 55.098 ms]
 
 use super::*;
 type Input = String;
 type Parsed = Vec<Vec<char>>;
+
+static ADJACIENTS: [(isize, isize); 8] = [
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (0, -1),
+    (0, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+];
 
 fn printmap(m: &Parsed) {
     for line in m {
@@ -41,185 +52,36 @@ pub fn part1(oinput: &Parsed) -> usize {
     }
 }
 
-fn next2(input: &Parsed, row: usize, col: usize) -> char {
-    let adjacients: Vec<(i32, i32)> = if row == 0 {
-        if col == 0 {
-            vec![(1, 0), (1, 1), (0, 1)]
-        } else if col < input[0].len() - 1 {
-            vec![(0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-        } else {
-            vec![(0, -1), (1, -1), (1, 0)]
-        }
-    } else if row < input.len() - 1 {
-        if col == 0 {
-            vec![(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0)]
-        } else if col < input[0].len() - 1 {
-            vec![
-                (0, -1),
-                (0, 1),
-                (1, 0),
-                (-1, 0),
-                (1, 1),
-                (1, -1),
-                (-1, 1),
-                (-1, -1),
-            ]
-        } else {
-            assert!(col == input[0].len() - 1);
-            vec![(0, -1), (1, -1), (1, 0), (-1, 0), (-1, -1)]
-        }
-    } else {
-        assert!(row == input.len() - 1);
-        if col == 0 {
-            vec![(0, 1), (0 - 1, 1), (0 - 1, 0)]
-        } else if col < input[0].len() - 1 {
-            vec![(0, -1), (0, 1), (-1, -1), (-1, 0), (-1, 1)]
-        } else {
-            vec![(0, -1), (-1, -1), (-1, 0)]
-        }
-    };
-
+fn next1(input: &Parsed, row: usize, col: usize) -> char {
     if input[row][col] == 'L' {
-        let next_occupied = adjacients.iter().all(|(r, c)| {
-            let mut t_row = (*r) + row as i32;
-            let mut t_col = (*c) + col as i32;
-            let mut adjacient_cell = input[t_row as usize][t_col as usize];
-            if adjacient_cell == 'L' {
-                return true;
-            } else if adjacient_cell == '.' {
-                while (t_row >= 0
-                    && t_row <= (input.len() - 1) as i32
-                    && t_col >= 0
-                    && t_col <= (input[0].len() - 1) as i32)
-                    && adjacient_cell == '.'
-                {
-                    adjacient_cell = input[t_row as usize][t_col as usize];
-                    t_col = *c + t_col as i32;
-                    t_row = *r + t_row as i32;
-                }
-                return adjacient_cell == 'L' || adjacient_cell == '.';
-            } else {
-                return false; // this is a # cell
+        if ADJACIENTS.iter().all(|&(r, c)| {
+            if let Some(v) = input
+                .get((r + row as isize) as usize)
+                .and_then(|rr| rr.get((c + col as isize) as usize))
+            {
+                return *v == 'L' || *v == '.';
             }
-        });
-        if next_occupied {
+            return true;
+        }) {
             return '#';
         } else {
             return 'L';
         }
     } else {
-        let next_empty = adjacients
+        if ADJACIENTS
             .iter()
-            .filter(|(r, c)| {
-                let mut t_row = (*r) + row as i32;
-                let mut t_col = (*c) + col as i32;
-                let mut adjacient_cell = input[t_row as usize][t_col as usize];
-                if adjacient_cell == '#' {
-                    return true;
-                } else if adjacient_cell == '.' {
-                    while (t_row >= 0
-                        && t_row <= (input.len() - 1) as i32
-                        && t_col >= 0
-                        && t_col <= (input[0].len() - 1) as i32)
-                        && adjacient_cell == '.'
-                    {
-                        adjacient_cell = input[t_row as usize][t_col as usize];
-                        t_col = *c + t_col as i32;
-                        t_row = *r + t_row as i32;
-                    }
-                    return adjacient_cell == '#';
-                } else {
-                    return false; // this is an L cell
+            .filter(|&(r, c)| {
+                if let Some(v) = input
+                    .get((r + row as isize) as usize)
+                    .and_then(|row| row.get((c + col as isize) as usize))
+                {
+                    return *v == '#';
                 }
+                return false;
             })
             .count()
-            >= 5;
-        if next_empty {
-            return 'L';
-        } else {
-            return '#';
-        }
-    }
-}
-
-fn next1(input: &Parsed, row: usize, col: usize) -> char {
-    let adjacients = if row == 0 {
-        if col == 0 {
-            vec![(1, 0), (1, 1), (0, 1)]
-        } else if col < input[0].len() - 1 {
-            vec![
-                (0, col - 1),
-                (0, col + 1),
-                (1, col - 1),
-                (1, col),
-                (1, col + 1),
-            ]
-        } else {
-            vec![(0, col - 1), (1, col - 1), (1, col)]
-        }
-    } else if row < input.len() - 1 {
-        if col == 0 {
-            vec![
-                (row - 1, 0),
-                (row - 1, 1),
-                (row, 1),
-                (row + 1, 1),
-                (row + 1, 0),
-            ]
-        } else if col < input[0].len() - 1 {
-            vec![
-                (row, col - 1),
-                (row, col + 1),
-                (row + 1, col),
-                (row - 1, col),
-                (row + 1, col + 1),
-                (row + 1, col - 1),
-                (row - 1, col + 1),
-                (row - 1, col - 1),
-            ]
-        } else {
-            assert!(col == input[0].len() - 1);
-            vec![
-                (row, col - 1),
-                (row + 1, col - 1),
-                (row + 1, col),
-                (row - 1, col),
-                (row - 1, col - 1),
-            ]
-        }
-    } else {
-        assert!(row == input.len() - 1);
-        if col == 0 {
-            vec![(row, 1), (row - 1, 1), (row - 1, 0)]
-        } else if col < input[0].len() - 1 {
-            vec![
-                (row, col - 1),
-                (row, col + 1),
-                (row - 1, col - 1),
-                (row - 1, col),
-                (row - 1, col + 1),
-            ]
-        } else {
-            vec![(row, col - 1), (row - 1, col - 1), (row - 1, col)]
-        }
-    };
-
-    if input[row][col] == 'L' {
-        let next_occupied = adjacients
-            .iter()
-            .all(|(r, c)| input[*r][*c] == 'L' || input[*r][*c] == '.');
-        if next_occupied {
-            return '#';
-        } else {
-            return 'L';
-        }
-    } else {
-        let next_empty = adjacients
-            .iter()
-            .filter(|(r, c)| input[*r][*c] == '#')
-            .count()
-            >= 4;
-        if next_empty {
+            >= 4
+        {
             return 'L';
         } else {
             return '#';
@@ -252,6 +114,57 @@ pub fn part2(oinput: &Parsed) -> usize {
         }
         last_occupied = occupied;
         // printmap(&input);
+    }
+}
+
+fn next2(input: &Parsed, row: usize, col: usize) -> char {
+    if input[row][col] == 'L' {
+        if ADJACIENTS.iter().all(|&(r, c)| {
+            let mut t_row = (r + row as isize) as usize;
+            let mut t_col = (c + col as isize) as usize;
+
+            while let Some(v) = input.get(t_row).and_then(|rr| rr.get(t_col)) {
+                if *v == '.' {
+                    t_row = (r + t_row as isize) as usize;
+                    t_col = (c + t_col as isize) as usize;
+                } else if *v == 'L' {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }) {
+            return '#';
+        } else {
+            return 'L';
+        }
+    } else {
+        if ADJACIENTS
+            .iter()
+            .filter(|&(r, c)| {
+                let mut t_row = (r + row as isize) as usize;
+                let mut t_col = (c + col as isize) as usize;
+
+                while let Some(v) = input.get(t_row).and_then(|rr| rr.get(t_col)) {
+                    if *v == '.' {
+                        t_row = (r + t_row as isize) as usize;
+                        t_col = (c + t_col as isize) as usize;
+                    } else if *v == '#' {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                return false;
+            })
+            .count()
+            >= 5
+        {
+            return 'L';
+        } else {
+            return '#';
+        }
     }
 }
 

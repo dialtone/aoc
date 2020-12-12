@@ -1,19 +1,14 @@
+// day12 parse             time:   [13.672 us 13.772 us 13.887 us]
+// day12 part 1            time:   [6.9036 us 7.0104 us 7.1657 us]
+// day12 part 2            time:   [6.4478 us 6.4916 us 6.5392 us]
+
 use super::*;
 
 type Input = String;
+type Move = (u8, isize);
 type Parsed = Vec<Move>;
 
-pub enum Move {
-    North(usize),
-    South(usize),
-    East(usize),
-    West(usize),
-    Left(usize),
-    Right(usize),
-    Forward(usize),
-}
-
-static DIRECTION: [fn(usize) -> Move; 4] = [Move::East, Move::South, Move::West, Move::North];
+static DIRECTION: [u8; 4] = [b'E', b'S', b'W', b'N'];
 
 pub struct Point {
     pub x: isize,
@@ -28,11 +23,11 @@ impl Point {
 
     fn next(&mut self, m: &Move) {
         match m {
-            &Move::North(amount) => self.y += amount as isize,
-            &Move::South(amount) => self.y -= amount as isize,
-            &Move::East(amount) => self.x += amount as isize,
-            &Move::West(amount) => self.x -= amount as isize,
-            &Move::Left(degrees) => {
+            &(b'N', amount) => self.y += amount as isize,
+            &(b'S', amount) => self.y -= amount as isize,
+            &(b'E', amount) => self.x += amount as isize,
+            &(b'W', amount) => self.x -= amount as isize,
+            &(b'L', degrees) => {
                 if self.orientation == 0 {
                     let x = self.x;
                     let y = self.y;
@@ -51,13 +46,11 @@ impl Point {
                     }
                 } else {
                     let increments = degrees / 90;
-                    self.orientation -= increments;
+                    self.orientation -= increments as usize;
                 }
             }
-            &Move::Right(degrees) => {
+            &(b'R', degrees) => {
                 if self.orientation == 0 {
-                    let x = self.x;
-                    let y = self.y;
                     let x = self.x;
                     let y = self.y;
 
@@ -75,10 +68,11 @@ impl Point {
                     }
                 } else {
                     let increments = degrees / 90;
-                    self.orientation += increments;
+                    self.orientation += increments as usize;
                 }
             }
-            &Move::Forward(amount) => self.next(&DIRECTION[self.orientation % 4](amount)),
+            &(b'F', amount) => self.next(&(DIRECTION[self.orientation % 4], amount)),
+            _ => unreachable!(),
         }
     }
 }
@@ -96,19 +90,22 @@ impl Point2 {
 
     fn next(&mut self, m: &Move) {
         match m {
-            &Move::North(amount) => self.waypoint.next(m),
-            &Move::South(amount) => self.waypoint.next(m),
-            &Move::East(amount) => self.waypoint.next(m),
-            &Move::West(amount) => self.waypoint.next(m),
-            &Move::Left(degrees) => {
+            &(b'N', _) => self.waypoint.next(m),
+            &(b'S', _) => self.waypoint.next(m),
+            &(b'E', _) => self.waypoint.next(m),
+            &(b'W', _) => self.waypoint.next(m),
+            &(b'L', _) => {
                 self.waypoint.next(m);
             }
-            &Move::Right(degrees) => {
+            &(b'R', _) => {
                 self.waypoint.next(m);
             }
-            &Move::Forward(amount) => {
+            &(b'F', amount) => {
                 self.x += self.waypoint.x * amount as isize;
                 self.y += self.waypoint.y * amount as isize;
+            }
+            _ => {
+                unreachable!()
             }
         }
     }
@@ -132,24 +129,8 @@ pub fn part2(input: &Parsed) -> isize {
 
 pub fn parse(s: &Input) -> Parsed {
     s.lines()
-        .map(|l| {
-            let (m, size) = l.split_at(1);
-            to_move(m, size.parse().unwrap())
-        })
+        .map(|l| (l.as_bytes()[0], l[1..].parse().unwrap()))
         .collect()
-}
-
-fn to_move(c: &str, n: usize) -> Move {
-    match c {
-        "N" => Move::North(n),
-        "S" => Move::South(n),
-        "E" => Move::East(n),
-        "W" => Move::West(n),
-        "L" => Move::Left(n),
-        "R" => Move::Right(n),
-        "F" => Move::Forward(n),
-        _ => unreachable!(),
-    }
 }
 
 #[cfg(test)]

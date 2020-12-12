@@ -60,7 +60,7 @@ pub fn part2(oinput: &Parsed) -> usize {
 }
 
 pub fn parse(s: &Input) -> Parsed {
-    s.lines().map(|x| x.parse().unwrap()).collect::<Vec<_>>()
+    s.lines().map(|x| x.parse().unwrap()).collect()
 }
 
 #[cfg(test)]

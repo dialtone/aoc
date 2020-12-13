@@ -53,6 +53,10 @@ harness = false
 name = "day12"
 harness = false
 
+[[bench]]
+name = "day13"
+harness = false
+
 [dependencies]
 reqwest = { version = "0.10", features = [ "blocking", "gzip", "cookies" ] }
 thiserror = "1.0"

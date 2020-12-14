@@ -26,7 +26,7 @@ pub fn part1(input: &Parsed) -> usize {
             }
             &Operation::Mem(loc, val) => {
                 let entry = mem.entry(loc).or_insert(0);
-                let store_val = val & and_mask | or_mask;
+                let store_val = (val & and_mask) | or_mask;
                 *entry = store_val;
             }
         }
@@ -48,8 +48,7 @@ pub fn part2(input: &Parsed) -> usize {
                 or_mask = *or_m;
             }
             Operation::Mem(loc, val) => {
-                let mut decoded_loc = loc | or_mask;
-                decoded_loc = decoded_loc & and_float;
+                let decoded_loc = (loc | or_mask) & and_float;
                 for mask in float_masks.iter() {
                     let entry = mem.entry(decoded_loc | mask).or_insert(0);
                     *entry = *val;

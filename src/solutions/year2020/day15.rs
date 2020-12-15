@@ -2,8 +2,6 @@
 // day15 part 1            time:   [5.4187 us 5.4735 us 5.5365 us]
 // day15 part 2            time:   [935.75 ms 940.06 ms 944.73 ms]
 
-use super::*;
-
 type Input = String;
 type Parsed = Vec<usize>;
 

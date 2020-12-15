@@ -1,6 +1,8 @@
-use super::*;
+// day15 parse             time:   [391.75 ns 397.76 ns 404.48 ns]
+// day15 part 1            time:   [5.4187 us 5.4735 us 5.5365 us]
+// day15 part 2            time:   [935.75 ms 940.06 ms 944.73 ms]
 
-use std::collections::HashMap;
+use super::*;
 
 type Input = String;
 type Parsed = Vec<usize>;
@@ -10,39 +12,23 @@ pub fn part1(input: &Parsed) -> usize {
 }
 
 fn solve(input: &Parsed, upto: usize) -> usize {
-    let mut occurrences: HashMap<usize, Vec<usize>> = HashMap::new();
-    let mut start = 0;
-    let mut curr = 0;
-    loop {
-        if start == upto {
-            return curr;
-        }
+    let mut occurrences: Vec<Option<usize>> = vec![None; upto];
 
-        if start < input.len() {
-            curr = input[start];
+    input.iter().copied().enumerate().for_each(|(i, n)| {
+        occurrences[n] = Some(i);
+    });
+
+    let mut last = *input.last().unwrap();
+    for i in input.len()..upto {
+        let prev_last = last;
+        if let Some(v) = occurrences[last] {
+            last = i - 1 - v;
         } else {
-            curr = if let Some(v) = occurrences.get(&curr) {
-                if v.len() == 1 {
-                    0
-                } else {
-                    let last = v[v.len() - 1];
-                    let second_to_last = v[v.len() - 2];
-                    last - second_to_last
-                }
-            } else {
-                unreachable!()
-            }
+            last = 0
         }
-
-        occurrences
-            .entry(curr)
-            .or_insert(Vec::new())
-            .push(start + 1);
-
-        // dbg!(curr, start + 1);
-
-        start += 1;
+        occurrences[prev_last] = Some(i - 1);
     }
+    last
 }
 
 pub fn part2(input: &Parsed) -> usize {

@@ -95,6 +95,15 @@ pub fn part2(input: &Parsed) -> usize {
             }
             &Operation::Mem(loc, val) => {
                 let decoded_loc = (loc | or_mask) & and_float;
+                // neat trick with xor for the combinations.
+                // let index = index | current_or_mask;
+                //     let mut xor = current_x_mask + 1;
+
+                //     for _ in 0..2_u16.pow(current_x_mask.count_ones()) {
+                //         xor = (xor - 1) & current_x_mask;
+                //         *memory.entry(index ^ xor).or_default() = num;
+                //     }
+                // }
                 for mask in float_masks.iter() {
                     let entry = mem.entry(decoded_loc | mask).or_insert(0);
                     *entry = val;

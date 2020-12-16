@@ -6,8 +6,12 @@ fn bench_day16(c: &mut Criterion) {
     let raw_input = aoc::input::get_input(2020, 16).unwrap();
     c.bench_function("day16 parse", |b| b.iter(|| parse(&raw_input)));
     let input = parse(&raw_input);
-    c.bench_function("day16 part 1", |b| b.iter(|| part1(&input)));
-    c.bench_function("day16 part 2", |b| b.iter(|| part2(&input)));
+    c.bench_function("day16 part 1", |b| {
+        b.iter(|| part1(&input.0, &input.1, &input.2))
+    });
+    c.bench_function("day16 part 2", |b| {
+        b.iter(|| part2(&input.0, &input.1, &input.2))
+    });
 }
 
 criterion_group!(benches, bench_day16);

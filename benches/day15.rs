@@ -10,5 +10,9 @@ fn bench_day15(c: &mut Criterion) {
     c.bench_function("day15 part 2", |b| b.iter(|| part2(&input)));
 }
 
-criterion_group!(benches, bench_day15);
+criterion_group! {
+    name = benches;
+    config = Criterion::default().sample_size(10);
+    targets = bench_day15
+}
 criterion_main!(benches);

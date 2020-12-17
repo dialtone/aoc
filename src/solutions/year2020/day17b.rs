@@ -1,5 +1,5 @@
-// day17b part 1           time:   [1.1178 ms 1.1249 ms 1.1333 ms]
-// day17b part 2           time:   [19.325 ms 19.427 ms 19.540 ms]
+// day17b part 1           time:   [787.51 us 793.55 us 800.59 us]
+// day17b part 2           time:   [14.821 ms 15.026 ms 15.257 ms]
 use super::*;
 use std::collections::*;
 use std::convert::TryInto;

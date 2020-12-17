@@ -43,6 +43,10 @@ lazy_static! {
     static ref NEIGHBORS3: [(isize, isize, isize); 26] = neighbors![-1..2; -1..2; -1..2];
     static ref NEIGHBORS4: [(isize, isize, isize, isize); 80] =
         neighbors![-1..2; -1..2; -1..2; -1..2];
+    // static ref NEIGH3: [(isize, isize, isize); 26] = iproduct!(-1..2, -1..2, -1..2)
+    //     .collect::<Vec<_>>()
+    //     .try_into()
+    //     .unwrap();
 }
 
 pub fn part1(input: &str) -> usize {
@@ -65,17 +69,6 @@ pub fn part1(input: &str) -> usize {
             }
         }
 
-        // for dz in -1..2 {
-        //     for dy in -1..2 {
-        //         for dx in -1..2 {
-        //             // we're evaluating this spot so skip it
-
-        //             // we build a map with the number of cubes neighbors in this position
-        //         }
-        //     }
-        // }
-        // }
-
         let mut new = Vec::new();
 
         for cnt in &adj {
@@ -91,6 +84,7 @@ pub fn part1(input: &str) -> usize {
         map.clear();
         map.extend(new);
 
+        // another approach
         // let mut new = Vec::new();
         // for &pos in &map {
         //     let cnt = *adj.get(&pos).unwrap_or(&0);
@@ -130,22 +124,6 @@ pub fn part2(input: &str) -> usize {
                 *adj.entry((cube.0 + ds.0, cube.1 + ds.1, cube.2 + ds.2, cube.3 + ds.3))
                     .or_default() += 1;
             }
-            // for dw in -1..2 {
-            //     for dz in -1..2 {
-            //         for dy in -1..2 {
-            //             for dx in -1..2 {
-            //                 // we're evaluating this spot so skip it
-            //                 if dx == 0 && dy == 0 && dz == 0 && dw == 0 {
-            //                     continue;
-            //                 }
-
-            //                 // we build a map with the number of cubes neighbors in this position
-            //                 *adj.entry((cube.0 + dx, cube.1 + dy, cube.2 + dz, cube.3 + dw))
-            //                     .or_default() += 1;
-            //             }
-            //         }
-            //     }
-            // }
         }
 
         let mut new = Vec::new();

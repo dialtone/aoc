@@ -10,7 +10,7 @@ pub enum Node {
     Letter(char),
 }
 
-pub fn part1(input: &str) -> usize {
+fn parse(input: &str) -> (&str, HashMap<usize, Node>) {
     let mut map = HashMap::new();
     let mut parts = input.split("\n\n");
     let rules = parts.next().unwrap();
@@ -34,17 +34,45 @@ pub fn part1(input: &str) -> usize {
             );
         }
     }
+    (parts.next().unwrap(), map)
+}
 
+pub fn part1(input: &str) -> usize {
+    let (messages, map) = parse(input);
     let mut match_num = 0;
-    for message in parts.next().unwrap().lines() {
+    for message in messages.lines() {
         let mut chars = message.chars();
         let pos = map.get(&0).unwrap();
         if matches(&map, &mut chars, &pos) {
-            if chars.next().unwrap_or('f') != 'f' {
+            if let Some(_c) = chars.next() {
                 // didn't run out of the string
                 continue;
             }
             match_num += 1;
+        }
+    }
+    match_num
+}
+
+pub fn part2(input: &str) -> usize {
+    let (messages, map) = parse(input);
+
+    let mut match_num = 0;
+    for message in messages.lines() {
+        let mut chars = message.chars().peekable();
+        let mut matches_42 = 0;
+        while matches(&map, &mut chars, map.get(&42).unwrap()) {
+            matches_42 += 1;
+            let mut innerc = chars.clone();
+            for _ in 1..matches_42 {
+                if matches(&map, &mut innerc, map.get(&31).unwrap()) {
+                    let mut inner2 = innerc.clone();
+                    if inner2.peek().is_none() {
+                        match_num += 1;
+                        break;
+                    }
+                }
+            }
         }
     }
     match_num
@@ -90,52 +118,6 @@ fn matches(
             }
         }
     }
-}
-
-pub fn part2(input: &str) -> usize {
-    let mut map = HashMap::new();
-    let mut parts = input.split("\n\n");
-    let rules = parts.next().unwrap();
-
-    for line in rules.lines() {
-        let mut parts = line.split(": ");
-        let rule_id = parts.next().unwrap().parse().unwrap();
-        let rule_body = parts.next().unwrap();
-        if rule_body.contains(&" | ") {
-            let body = rule_body.split(" | ");
-            let mut sides = body.map(|side| side.split(" ").map(|x| x.parse().unwrap()).collect());
-            let node = Node::Either(sides.next().unwrap(), sides.next().unwrap());
-            map.insert(rule_id, node);
-        } else if rule_body.contains(&"\"") {
-            let letter = rule_body.chars().filter(|&x| x != '"').next().unwrap();
-            map.insert(rule_id, Node::Letter(letter));
-        } else {
-            map.insert(
-                rule_id,
-                Node::Seq(rule_body.split(" ").map(|c| c.parse().unwrap()).collect()),
-            );
-        }
-    }
-
-    let mut match_num = 0;
-    for message in parts.next().unwrap().lines() {
-        let mut chars = message.chars().peekable();
-        let mut matches_42 = 0;
-        while matches(&map, &mut chars, map.get(&42).unwrap()) {
-            matches_42 += 1;
-            let mut innerc = chars.clone();
-            for _ in 1..matches_42 {
-                if matches(&map, &mut innerc, map.get(&31).unwrap()) {
-                    let mut inner2 = innerc.clone();
-                    if inner2.peek().is_none() {
-                        match_num += 1;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    match_num
 }
 
 #[cfg(test)]

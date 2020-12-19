@@ -261,6 +261,9 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
     }
 
     #[test]
+    fn day192() {}
+
+    #[test]
     fn day19() {
         let input = get_input(2020, 19).unwrap();
         assert_eq!(part1(&input), 210);

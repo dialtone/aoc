@@ -1,5 +1,5 @@
-// day19 part 1            time:   [6.6383 ms 6.7153 ms 6.7967 ms]
-// day19 part 2            time:   [16.452 ms 16.654 ms 16.889 ms]
+// day19 part 1            time:   [2.0560 ms 2.0845 ms 2.1163 ms]
+// day19 part 2            time:   [4.9350 ms 4.9887 ms 5.0485 ms]
 use super::*;
 use std::collections::*;
 

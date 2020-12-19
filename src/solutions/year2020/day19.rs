@@ -40,6 +40,7 @@ fn parse(input: &str) -> (&str, HashMap<usize, Node>) {
 pub fn part1(input: &str) -> usize {
     let (messages, map) = parse(input);
     let mut match_num = 0;
+    let mut ms = vec![];
     for message in messages.lines() {
         let mut chars = message.chars();
         if matches(&map, &mut chars, 0) {
@@ -47,9 +48,12 @@ pub fn part1(input: &str) -> usize {
                 // didn't run out of the string
                 continue;
             }
+            println!("True");
             match_num += 1;
+            ms.push(message);
         }
     }
+    println!("{:?}", ms);
     match_num
 }
 
@@ -82,6 +86,16 @@ fn match_sequence(
     chars: &mut (impl Iterator<Item = char> + Clone),
     rules: &[usize],
 ) -> bool {
+    println!(
+        "{} {:?}",
+        chars
+            .clone()
+            .collect::<Vec<_>>()
+            .iter()
+            .map(|c| c.to_string())
+            .join(""),
+        rules
+    );
     let mut newchar = chars.clone();
     for &step in rules {
         if matches(map, &mut newchar, step) {
@@ -99,8 +113,24 @@ fn matches(
     chars: &mut (impl Iterator<Item = char> + Clone),
     rule: usize,
 ) -> bool {
+    println!(
+        "{} {:?}",
+        chars
+            .clone()
+            .collect::<Vec<_>>()
+            .iter()
+            .map(|c| c.to_string())
+            .join(""),
+        rule
+    );
     match map.get(&rule).unwrap() {
-        &Node::Letter(from_rule) => chars.next().unwrap_or('f') == from_rule,
+        &Node::Letter(from_rule) => {
+            if let Some(c) = chars.next() {
+                c == from_rule
+            } else {
+                false
+            }
+        }
         Node::Seq(steps) => match_sequence(map, chars, &steps),
         Node::Either(left, right) => {
             if match_sequence(map, chars, &left) {
@@ -133,54 +163,54 @@ abbbab
 aaabbb
 aaaabbb";
         assert_eq!(part1(&test_input), 2);
-        let test_input = "42: 9 14 | 10 1
-9: 14 27 | 1 26
-10: 23 14 | 28 1
-1: \"a\"
-11: 42 31
-5: 1 14 | 15 1
-19: 14 1 | 14 14
-12: 24 14 | 19 1
-16: 15 1 | 14 14
-31: 14 17 | 1 13
-6: 14 14 | 1 14
-2: 1 24 | 14 4
-0: 8 11
-13: 14 3 | 1 12
-15: 1 | 14
-17: 14 2 | 1 7
-23: 25 1 | 22 14
-28: 16 1
-4: 1 1
-20: 14 14 | 1 15
-3: 5 14 | 16 1
-27: 1 6 | 14 18
-14: \"b\"
-21: 14 1 | 1 14
-25: 1 1 | 1 14
-22: 14 14
-8: 42
-26: 14 22 | 1 20
-18: 15 15
-7: 14 5 | 1 21
-24: 14 1
+        //         let test_input = "42: 9 14 | 10 1
+        // 9: 14 27 | 1 26
+        // 10: 23 14 | 28 1
+        // 1: \"a\"
+        // 11: 42 31
+        // 5: 1 14 | 15 1
+        // 19: 14 1 | 14 14
+        // 12: 24 14 | 19 1
+        // 16: 15 1 | 14 14
+        // 31: 14 17 | 1 13
+        // 6: 14 14 | 1 14
+        // 2: 1 24 | 14 4
+        // 0: 8 11
+        // 13: 14 3 | 1 12
+        // 15: 1 | 14
+        // 17: 14 2 | 1 7
+        // 23: 25 1 | 22 14
+        // 28: 16 1
+        // 4: 1 1
+        // 20: 14 14 | 1 15
+        // 3: 5 14 | 16 1
+        // 27: 1 6 | 14 18
+        // 14: \"b\"
+        // 21: 14 1 | 1 14
+        // 25: 1 1 | 1 14
+        // 22: 14 14
+        // 8: 42
+        // 26: 14 22 | 1 20
+        // 18: 15 15
+        // 7: 14 5 | 1 21
+        // 24: 14 1
 
-abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
-bbabbbbaabaabba
-babbbbaabbbbbabbbbbbaabaaabaaa
-aaabbbbbbaaaabaababaabababbabaaabbababababaaa
-bbbbbbbaaaabbbbaaabbabaaa
-bbbababbbbaaaaaaaabbababaaababaabab
-ababaaaaaabaaab
-ababaaaaabbbaba
-baabbaaaabbaaaababbaababb
-abbbbabbbbaaaababbbbbbaaaababb
-aaaaabbaabaaaaababaa
-aaaabbaaaabbaaa
-aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
-babaaabbbaaabaababbaabababaaab
-aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
-        assert_eq!(part1(&test_input), 3);
+        // abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+        // bbabbbbaabaabba
+        // babbbbaabbbbbabbbbbbaabaaabaaa
+        // aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+        // bbbbbbbaaaabbbbaaabbabaaa
+        // bbbababbbbaaaaaaaabbababaaababaabab
+        // ababaaaaaabaaab
+        // ababaaaaabbbaba
+        // baabbaaaabbaaaababbaababb
+        // abbbbabbbbaaaababbbbbbaaaababb
+        // aaaaabbaabaaaaababaa
+        // aaaabbaaaabbaaa
+        // aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+        // babaaabbbaaabaababbaabababaaab
+        // aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
+        //         assert_eq!(part1(&test_input), 3);
     }
 
     #[test]
@@ -218,22 +248,24 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
 7: 14 5 | 1 21
 24: 14 1
 
-abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
-bbabbbbaabaabba
-babbbbaabbbbbabbbbbbaabaaabaaa
-aaabbbbbbaaaabaababaabababbabaaabbababababaaa
-bbbbbbbaaaabbbbaaabbabaaa
-bbbababbbbaaaaaaaabbababaaababaabab
-ababaaaaaabaaab
-ababaaaaabbbaba
-baabbaaaabbaaaababbaababb
-abbbbabbbbaaaababbbbbbaaaababb
-aaaaabbaabaaaaababaa
-aaaabbaaaabbaaa
-aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
-babaaabbbaaabaababbaabababaaab
-aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
-        assert_eq!(part2(&test_input), 12);
+aaaaabbaabaaaaababaa";
+        assert_eq!(part1(&test_input), 1);
+        // abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+        // bbabbbbaabaabba
+        // babbbbaabbbbbabbbbbbaabaaabaaa
+        // aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+        // bbbbbbbaaaabbbbaaabbabaaa
+        // bbbababbbbaaaaaaaabbababaaababaabab
+        // ababaaaaaabaaab
+        // ababaaaaabbbaba
+        // baabbaaaabbaaaababbaababb
+        // abbbbabbbbaaaababbbbbbaaaababb
+        // aaaaabbaabaaaaababaa
+        // aaaabbaaaabbaaa
+        // aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+        // babaaabbbaaabaababbaabababaaab
+        // aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
+        // assert_eq!(part1(&test_input), 12);
     }
 
     #[test]

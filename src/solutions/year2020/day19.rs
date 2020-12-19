@@ -42,8 +42,7 @@ pub fn part1(input: &str) -> usize {
     let mut match_num = 0;
     for message in messages.lines() {
         let mut chars = message.chars();
-        let pos = map.get(&0).unwrap();
-        if matches(&map, &mut chars, &pos) {
+        if matches(&map, &mut chars, 0) {
             if let Some(_c) = chars.next() {
                 // didn't run out of the string
                 continue;
@@ -61,11 +60,11 @@ pub fn part2(input: &str) -> usize {
     for message in messages.lines() {
         let mut chars = message.chars().peekable();
         let mut matches_42 = 0;
-        while matches(&map, &mut chars, map.get(&42).unwrap()) {
+        while matches(&map, &mut chars, 42) {
             matches_42 += 1;
             let mut innerc = chars.clone();
             for _ in 1..matches_42 {
-                if matches(&map, &mut innerc, map.get(&31).unwrap()) {
+                if matches(&map, &mut innerc, 31) {
                     let mut inner2 = innerc.clone();
                     if inner2.peek().is_none() {
                         match_num += 1;
@@ -78,43 +77,38 @@ pub fn part2(input: &str) -> usize {
     match_num
 }
 
+fn match_sequence(
+    map: &HashMap<usize, Node>,
+    chars: &mut (impl Iterator<Item = char> + Clone),
+    rules: &[usize],
+) -> bool {
+    let mut newchar = chars.clone();
+    for &step in rules {
+        if matches(map, &mut newchar, step) {
+            continue;
+        } else {
+            return false;
+        }
+    }
+    std::mem::swap(chars, &mut newchar);
+    true
+}
+
 fn matches(
     map: &HashMap<usize, Node>,
     chars: &mut (impl Iterator<Item = char> + Clone),
-    rule: &Node,
+    rule: usize,
 ) -> bool {
-    match rule {
+    match map.get(&rule).unwrap() {
         &Node::Letter(from_rule) => chars.next().unwrap_or('f') == from_rule,
-        Node::Seq(steps) => {
-            for step in steps {
-                if let Some(next_rule) = map.get(&step) {
-                    if matches(map, chars, next_rule) {
-                        continue;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            true
-        }
-        // This below is awful, but faster to do for now
+        Node::Seq(steps) => match_sequence(map, chars, &steps),
         Node::Either(left, right) => {
-            let leftseq = Node::Seq(left.clone());
-            let mut newchar = chars.clone();
-            if !matches(map, &mut newchar, &leftseq) {
-                let rightseq = Node::Seq(right.clone());
-                newchar = chars.clone();
-                if matches(map, &mut newchar, &rightseq) {
-                    std::mem::swap(chars, &mut newchar);
-                    true
-                } else {
-                    false
-                }
-            } else {
-                std::mem::swap(chars, &mut newchar);
+            if match_sequence(map, chars, &left) {
                 true
+            } else if match_sequence(map, chars, &right) {
+                true
+            } else {
+                false
             }
         }
     }

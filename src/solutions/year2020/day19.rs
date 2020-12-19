@@ -1,3 +1,5 @@
+// day19 part 1            time:   [6.6383 ms 6.7153 ms 6.7967 ms]
+// day19 part 2            time:   [16.452 ms 16.654 ms 16.889 ms]
 use super::*;
 use std::collections::*;
 
@@ -54,22 +56,11 @@ fn matches(
     rule: &Node,
 ) -> bool {
     match rule {
-        &Node::Letter(from_rule) => {
-            let mut newchar = chars.clone();
-            let from_message = newchar.next().unwrap_or('f');
-            if from_message == from_rule {
-                std::mem::swap(chars, &mut newchar);
-                true
-            } else {
-                false
-            }
-        }
+        &Node::Letter(from_rule) => chars.next().unwrap_or('f') == from_rule,
         Node::Seq(steps) => {
-            let mut newchar = chars.clone();
-
             for step in steps {
                 if let Some(next_rule) = map.get(&step) {
-                    if matches(map, &mut newchar, next_rule) {
+                    if matches(map, chars, next_rule) {
                         continue;
                     } else {
                         return false;
@@ -78,7 +69,6 @@ fn matches(
                     return false;
                 }
             }
-            std::mem::swap(chars, &mut newchar);
             true
         }
         // This below is awful, but faster to do for now
@@ -129,7 +119,7 @@ pub fn part2(input: &str) -> usize {
 
     let mut match_num = 0;
     for message in parts.next().unwrap().lines() {
-        let mut chars = message.chars();
+        let mut chars = message.chars().peekable();
         let mut matches_42 = 0;
         while matches(&map, &mut chars, map.get(&42).unwrap()) {
             matches_42 += 1;
@@ -137,7 +127,7 @@ pub fn part2(input: &str) -> usize {
             for _ in 1..matches_42 {
                 if matches(&map, &mut innerc, map.get(&31).unwrap()) {
                     let mut inner2 = innerc.clone();
-                    if let None = inner2.next() {
+                    if inner2.peek().is_none() {
                         match_num += 1;
                         break;
                     }

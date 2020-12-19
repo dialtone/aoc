@@ -1,9 +1,6 @@
 use super::*;
 use std::collections::*;
 
-type Input = String;
-type Parsed = HashMap<usize, Node>;
-
 #[derive(Debug, Clone)]
 pub enum Node {
     Either(Vec<usize>, Vec<usize>),
@@ -11,27 +8,10 @@ pub enum Node {
     Letter(char),
 }
 
-// pub struct Node {
-//     left: Vec<usize>,
-//     right: Vec<usize>,
-//     letter: Option<String>,
-// }
-// impl Node {
-//     pub fn new(left: &str, right: &str, letter: Option<String>) -> Self {
-//         Node { letter }
-//     }
-// }
-
 pub fn part1(input: &str) -> usize {
     let mut map = HashMap::new();
     let mut parts = input.split("\n\n");
     let rules = parts.next().unwrap();
-    // for rule in rules.lines() {
-    //     if !rule.contains(&"\"") {
-    //         continue
-    //     }
-    //     let letter = rule_body.chars().filter(|&x| x == '"').next().unwrap();
-    //     map.insert(rule_id, Node::Letter(letter));
 
     for line in rules.lines() {
         let mut parts = line.split(": ");
@@ -74,14 +54,22 @@ fn matches(
     rule: &Node,
 ) -> bool {
     match rule {
-        &Node::Letter(c) => {
-            let m = chars.next().unwrap_or('f');
-            m == c
+        &Node::Letter(from_rule) => {
+            let mut newchar = chars.clone();
+            let from_message = newchar.next().unwrap_or('f');
+            if from_message == from_rule {
+                std::mem::swap(chars, &mut newchar);
+                true
+            } else {
+                false
+            }
         }
         Node::Seq(steps) => {
+            let mut newchar = chars.clone();
+
             for step in steps {
-                if let Some(next) = map.get(&step) {
-                    if matches(map, chars, next) {
+                if let Some(next_rule) = map.get(&step) {
+                    if matches(map, &mut newchar, next_rule) {
                         continue;
                     } else {
                         return false;
@@ -90,8 +78,10 @@ fn matches(
                     return false;
                 }
             }
+            std::mem::swap(chars, &mut newchar);
             true
         }
+        // This below is awful, but faster to do for now
         Node::Either(left, right) => {
             let leftseq = Node::Seq(left.clone());
             let mut newchar = chars.clone();
@@ -113,7 +103,49 @@ fn matches(
 }
 
 pub fn part2(input: &str) -> usize {
-    5
+    let mut map = HashMap::new();
+    let mut parts = input.split("\n\n");
+    let rules = parts.next().unwrap();
+
+    for line in rules.lines() {
+        let mut parts = line.split(": ");
+        let rule_id = parts.next().unwrap().parse().unwrap();
+        let rule_body = parts.next().unwrap();
+        if rule_body.contains(&" | ") {
+            let body = rule_body.split(" | ");
+            let mut sides = body.map(|side| side.split(" ").map(|x| x.parse().unwrap()).collect());
+            let node = Node::Either(sides.next().unwrap(), sides.next().unwrap());
+            map.insert(rule_id, node);
+        } else if rule_body.contains(&"\"") {
+            let letter = rule_body.chars().filter(|&x| x != '"').next().unwrap();
+            map.insert(rule_id, Node::Letter(letter));
+        } else {
+            map.insert(
+                rule_id,
+                Node::Seq(rule_body.split(" ").map(|c| c.parse().unwrap()).collect()),
+            );
+        }
+    }
+
+    let mut match_num = 0;
+    for message in parts.next().unwrap().lines() {
+        let mut chars = message.chars();
+        let mut matches_42 = 0;
+        while matches(&map, &mut chars, map.get(&42).unwrap()) {
+            matches_42 += 1;
+            let mut innerc = chars.clone();
+            for _ in 1..matches_42 {
+                if matches(&map, &mut innerc, map.get(&31).unwrap()) {
+                    let mut inner2 = innerc.clone();
+                    if let None = inner2.next() {
+                        match_num += 1;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    match_num
 }
 
 #[cfg(test)]
@@ -187,6 +219,7 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
 
     #[test]
     fn test_day19_p2() {
+        // this already has the rules replaced
         let test_input = "42: 9 14 | 10 1
 9: 14 27 | 1 26
 10: 23 14 | 28 1
@@ -234,13 +267,13 @@ aaaabbaaaabbaaa
 aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
 babaaabbbaaabaababbaabababaaab
 aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
-        assert_eq!(part1(&test_input), 12);
+        assert_eq!(part2(&test_input), 12);
     }
 
     #[test]
     fn day19() {
         let input = get_input(2020, 19).unwrap();
         assert_eq!(part1(&input), 210);
-        // assert_eq!(part2(&parse(&input)), 5);
+        assert_eq!(part2(&input), 422);
     }
 }

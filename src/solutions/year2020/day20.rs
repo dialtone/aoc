@@ -5,7 +5,7 @@ use std::collections::*;
 type Input = String;
 type Parsed = String;
 
-type Tile<'a> = Vec<&'a str>;
+type Tile = Vec<String>;
 
 pub fn part1(input: &str) -> usize {
     // tiles outside have an outside border that doesn't line up with anything
@@ -34,11 +34,11 @@ pub fn part1(input: &str) -> usize {
         let right_edge = tile
             .iter()
             .map(|&row| row.chars().last().unwrap())
-            .collect::<&str>();
+            .collect::<String>();
         let bottom_edge = tile.last().unwrap().to_string();
 
         for edge in [top_edge, right_edge, bottom_edge, left_edge].iter() {
-            let flipped_edge = edge.chars().rev().collect::<&str>();
+            let flipped_edge = edge.chars().rev().collect::<String>();
 
             let entry = tile_edges.entry(tile_id).or_insert(Vec::new());
             entry.push(edge.clone());
@@ -85,65 +85,63 @@ pub fn part1(input: &str) -> usize {
     corners.iter().product()
 }
 
-fn rotated(tile: &Vec<&str>) -> Vec<&str> {
+fn rotated(tile: &Tile) -> Tile {
     let mut rotated = vec![vec!['X'; tile[0].len()]; tile.len()];
-    for &(i, row) in tile.iter().enumerate() {
-        for &(j, col) in row.chars() {
+    for (i, row) in tile.iter().enumerate() {
+        for (j, col) in row.chars().enumerate() {
             rotated[j][row.len() - 1 - i] = col;
         }
     }
 
-    rotated
-        .iter()
-        .map(|&rr| rr.iter().collect::<&str>())
-        .collect()
+    rotated.iter().map(|rr| rr.iter().collect()).collect()
 }
 
-fn flipped(tile: &Vec<&str>) -> Vec<&str> {
-    let mut flipped = vec![];
-    tile.iter()
-        .copied()
-        .map(|row| row.chars().rev().collect::<&str>())
+fn flipped(tile: &Tile) -> Tile {
+    tile.iter().map(|row| row.chars().rev().collect()).collect()
 }
 
-fn rotations(tile: &Vec<&str>) -> Vec<Vec<&str>> {
+fn rotations(tile: &Tile) -> Vec<Tile> {
     let mut rots = vec![tile.clone()];
-    let curr_tile = tile.clone();
+    let mut curr_tile = tile.clone();
     for _rot in 0..4 {
-        rots.push(rotated(curr_tile));
-        rots.push(flipped(curr_tile));
-        curr_tile = rots[rots.len() - 2];
+        let rot = rotated(&curr_tile);
+        let fliprot = flipped(&rot);
+        curr_tile = rot.clone();
+        rots.push(rot);
+        rots.push(fliprot);
     }
     rots
 }
 
-fn remove_outer_layer(tile: Vec<&str>) -> Vec<&str> {
-    assert_eq!(tile.len(), 10);
-    assert_eq!(tile[0].len(), 10);
-    let tile = tile
+fn remove_outer_layer(tile: Tile) -> Tile {
+    let tile_len = tile.len();
+    let row_len = tile[0].len();
+    let tile: Tile = tile
         .into_iter()
         .enumerate()
-        .map(|&(i, row)| {
-            if i == 0 || i == tile.len() - 1 {
-                vec![]
+        .map(|(i, row)| {
+            if i == 0 || i == tile_len - 1 {
+                "".to_owned()
             } else {
-                row[1..tile.len() - 1]
+                row[1..tile_len - 1].to_owned()
             }
         })
-        .filter(|&x| !x.is_empty())
+        .filter(|x| x.len() != 0)
         .collect();
-    assert_eq!(tile.len(), 9);
-    assert_eq!(tile[0].len(), 9);
+    assert_eq!(tile.len(), tile_len - 2);
+    assert_eq!(tile[0].len(), row_len - 2);
     tile
 }
 
 fn join_all_tiles(tiles: &Vec<Vec<Tile>>) -> Tile {
-    let mut joined: Vec<Vec<&str>> = vec![vec![tiles[0].len()]; tiles.len()];
+    let mut joined: Vec<Vec<String>> =
+        vec![vec!["".to_owned(); tiles[0].len()]; tiles[0][0].len() * tiles.len()];
 
-    for &(i, tiles_row) in tiles.iter().enumerate() {
-        for &(j, tile) in tiles_row.iter().enumerate() {
-            for row in tile {
-                joined[i][j] = row;
+    let tile_rows_len = tiles[0][0].len();
+    for (i, row_of_tiles) in tiles.iter().enumerate() {
+        for (j, col_of_tiles) in row_of_tiles.iter().enumerate() {
+            for (k, row_in_tile) in col_of_tiles.iter().enumerate() {
+                joined[i * tile_rows_len + k][j] = row_in_tile.clone();
             }
         }
     }
@@ -167,6 +165,102 @@ pub fn parse(s: &Input) -> &Parsed {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_remove_outer() {
+        let m: Tile = vec![
+            "....".to_owned(),
+            ".##.".to_owned(),
+            ".##.".to_owned(),
+            "....".to_owned(),
+        ];
+        assert_eq!(
+            remove_outer_layer(m),
+            vec!["##".to_owned(), "##".to_owned()]
+        )
+    }
+
+    #[test]
+    fn test_flip() {
+        let m: Tile = vec![
+            "#...".to_owned(),
+            "#...".to_owned(),
+            "#...".to_owned(),
+            "#...".to_owned(),
+        ];
+        let m_flip: Tile = vec![
+            "...#".to_owned(),
+            "...#".to_owned(),
+            "...#".to_owned(),
+            "...#".to_owned(),
+        ];
+        assert_eq!(flipped(&m), m_flip);
+    }
+
+    #[test]
+    fn test_join_tiles() {
+        let m: Tile = vec![
+            "#...".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+        ];
+        let m_rot1: Tile = vec![
+            "...#".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+        ];
+        let m_rot2: Tile = vec![
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "...#".to_owned(),
+        ];
+        let m_rot3: Tile = vec![
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "#...".to_owned(),
+        ];
+        let all = vec![vec![m, m_rot1], vec![m_rot3, m_rot2]];
+        let joined = vec![
+            "#......#", "........", "........", "........", "........", "........", "........",
+            "#......#",
+        ];
+        assert_eq!(join_all_tiles(&all), joined);
+    }
+
+    #[test]
+    fn test_rotate() {
+        let m: Tile = vec![
+            "#...".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+        ];
+        let m_rot1: Tile = vec![
+            "...#".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+        ];
+        let m_rot2: Tile = vec![
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "...#".to_owned(),
+        ];
+        let m_rot3: Tile = vec![
+            "....".to_owned(),
+            "....".to_owned(),
+            "....".to_owned(),
+            "#...".to_owned(),
+        ];
+        assert_eq!(rotated(&m), m_rot1);
+        assert_eq!(rotated(&m_rot1), m_rot2);
+        assert_eq!(rotated(&m_rot2), m_rot3);
+    }
 
     #[test]
     fn test_day20() {

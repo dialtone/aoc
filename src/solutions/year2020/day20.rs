@@ -1,8 +1,9 @@
 // day20 part 1            time:   [1.3046 ms 1.3241 ms 1.3464 ms]
 // day20 part 2            time:   [7.4332 ms 7.5433 ms 7.6747 ms]
+// no allocations solution with lots of bitmap play
+// https://github.com/aldanor/aoc-2020/blob/master/rust/src/day20/mod.rs
 use super::*;
 
-use regex::Regex;
 use std::collections::*;
 
 type Tile = Vec<String>;
@@ -269,7 +270,7 @@ pub fn part2(input: &str) -> usize {
         &mut seen,
     ) {
         println!("FAILED");
-        return;
+        return 0;
     }
 
     // printgrid(&full_grid);

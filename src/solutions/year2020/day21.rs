@@ -5,9 +5,6 @@ use super::*;
 
 use std::collections::*;
 
-type Input = String;
-type Parsed = String;
-
 pub fn part1(input: &str) -> usize {
     let mut allergen_to_ingredients = HashMap::new();
     let mut all_ingredients = HashSet::new();
@@ -69,40 +66,29 @@ pub fn part2(input: &str) -> String {
         }
     }
 
-    // println!("allergen_to_ingredients = {:?}", allergen_to_ingredients);
-
     let mut ingredient_to_allergen = HashMap::new();
-    let allergens = allergen_to_ingredients.keys().copied().collect::<Vec<_>>();
-    let allergens_num = allergens.len();
 
-    while ingredient_to_allergen.keys().len() < allergens_num {
-        // println!(
-        //     "ingredient to allergen found so far: {:?}",
-        //     ingredient_to_allergen.keys().collect::<Vec<_>>()
-        // );
-
-        // for each allergen
-        for allergen in &allergens {
-            // get the ingredients sets in which this allergen appears
-            let candidates_for_allergen = allergen_to_ingredients.get(allergen).unwrap();
-
-            // if the intersection is of size 1, then we've found a match
-            if candidates_for_allergen.len() == 1 {
-                // take out the ingredient now from all of the lists of candidates
-                let ingredient_to_remove = candidates_for_allergen.iter().next().unwrap().clone();
-                ingredient_to_allergen.insert(ingredient_to_remove, allergen);
-                for (_, v) in allergen_to_ingredients.iter_mut() {
-                    v.remove(ingredient_to_remove);
-                }
-            }
+    while let Some(&allergen) = allergen_to_ingredients
+        .iter()
+        .find(|(_, v)| v.len() == 1)
+        .map(|x| x.0)
+    {
+        // ingredient_set is len == 1 from the while condition, so let's just get the ingredient
+        let ingredient = allergen_to_ingredients[allergen]
+            .iter()
+            .next()
+            .unwrap()
+            .clone();
+        ingredient_to_allergen.insert(ingredient, allergen);
+        for (_, v) in allergen_to_ingredients.iter_mut() {
+            v.remove(ingredient);
         }
     }
 
     ingredient_to_allergen
         .iter()
-        .sorted_by_key(|&(&k, &&v)| v)
+        .sorted_by_key(|&(_, &v)| v)
         .map(|(&k, _)| k)
-        .collect::<Vec<&str>>()
         .join(",")
 }
 

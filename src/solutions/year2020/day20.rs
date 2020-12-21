@@ -1,3 +1,5 @@
+// day20 part 1            time:   [1.3046 ms 1.3241 ms 1.3464 ms]
+// day20 part 2            time:   [7.4332 ms 7.5433 ms 7.6747 ms]
 use super::*;
 
 use regex::Regex;
@@ -240,7 +242,6 @@ pub fn part1(input: &str) -> usize {
     let (_, shared_edges, tile_edges) = parse(input);
 
     let corners = find_corners(&shared_edges, &tile_edges);
-    // println!("corners => {:?}", corners);
     corners
         .iter()
         .map(|x| x.parse::<usize>().unwrap())
@@ -248,20 +249,12 @@ pub fn part1(input: &str) -> usize {
 }
 
 pub fn part2(input: &str) -> usize {
-    // 10x10 squares, rotate 4 times, flip each time to build the
-    // edges, to compose the map just dfs through the tiles looking for those with
-    // shared borders rotate them until they fit and apply and go forward, if you can't find
-    // an option go back and switch choice by backtracking
     let (tiles, shared_edges, tile_edges) = parse(input);
-
-    println!("SHARED EDGES {:?}", shared_edges);
 
     let total_tiles = tiles.len();
     let side_len = (total_tiles as f64).sqrt().trunc() as usize;
 
     let mut corners = find_corners(&shared_edges, &tile_edges);
-
-    // let sides = find_sides(&shared_edges, &tile_edges);
 
     let mut full_grid: Vec<Vec<Tile>> = vec![vec![vec![]; side_len]; side_len];
     let mut seen = HashSet::new();
@@ -276,9 +269,10 @@ pub fn part2(input: &str) -> usize {
         &mut seen,
     ) {
         println!("FAILED");
+        return;
     }
 
-    printgrid(&full_grid);
+    // printgrid(&full_grid);
 
     let clean_grid = full_grid
         .into_iter()
@@ -290,12 +284,6 @@ pub fn part2(input: &str) -> usize {
         .collect();
 
     let onegrid = join_all_tiles(&clean_grid, "");
-    for rotation in rotations(&onegrid) {
-        if rotation[0].starts_with("##.###..##..") {
-            println!("{}", rotation.join("\n"));
-            break;
-        }
-    }
 
     let dragon = "                  #
 #    ##    ##    ###
@@ -314,26 +302,10 @@ pub fn part2(input: &str) -> usize {
     for rotation in rotations(&onegrid) {
         let dragons = find_dragons(&rotation, &dots);
         if dragons > 0 {
-            println!("found {} dragons", dragons);
             dragon_cells = dragons * 15;
             break;
         }
     }
-
-    // let line_len = onegrid[0].len();
-    // let dragonrex = format!(
-    //     "#.{{{0}}}#....##....##....###.{{{1}}}#..#..#..#..#..#",
-    //     line_len - 19,
-    //     line_len - 19
-    // );
-    // println!("{}", dragonrex);
-    // let rex = Regex::new(&dragonrex).unwrap();
-    // let mut dragons = 0;
-    // dragons = rex.find_iter(&onegrid.join("")).count();
-    // if dragons > 0 {
-    //     println!("found {} dragons", dragons);
-    //     dragons *= 15;
-    // }
 
     onegrid.join("").chars().filter(|x| *x == '#').count() - dragon_cells
 }
@@ -371,13 +343,10 @@ fn fill_grid(
         // we'll iterate through all the possible orientations
         // really when we fail to find a match
         let tile_id = corners[0].clone();
-        println!("tile_id {}", tile_id);
         let tile = tiles.get(&tile_id).unwrap();
         seen.insert(tile_id.clone());
         for rotation in rotations(tile) {
-            full_grid[curr_pos.1][curr_pos.0] = rotation; //rotated(&rotated(&flipped(tile)));
-            println!("Filling pos {:?} with tile {}:", curr_pos, tile_id);
-            // printgrid(full_grid);
+            full_grid[curr_pos.1][curr_pos.0] = rotation;
             if fill_grid(
                 full_grid,
                 side_len,
@@ -396,24 +365,12 @@ fn fill_grid(
         return false;
     }
 
-    println!("\n\ncurrent grid:");
-    // printgrid(full_grid);
-    println!("Filling pos {:?}", curr_pos);
-
-    //
-    //
-    //
-
     let neigh = neighbors(curr_pos);
-    println!("neighbors of {:?}: {:?}", curr_pos, neigh);
     let default = Vec::new();
     let neighbor_tile_edges = neigh
         .iter()
         .enumerate()
         .map(|(i, &near_pos)| {
-            if curr_pos == (2, 0) {
-                println!("Nearby cells: {:?}", near_pos);
-            }
             if near_pos.is_none() {
                 return "".to_owned();
             }
@@ -435,9 +392,6 @@ fn fill_grid(
                 3 => right(&neighbor),  // LEFT
                 _ => unreachable!(),
             };
-            if curr_pos == (2, 0) {
-                println!("Nearby {:?} edge: {}", near_pos, edge);
-            }
             edge
         })
         .collect::<Vec<String>>();
@@ -458,23 +412,20 @@ fn fill_grid(
     } else {
         possible_set[1..]
             .iter()
-            .fold(possible_set[0].clone(), |acc, &s| {
-                &acc & s
-                // acc.intersection(&s).map(|x| x.clone()).collect()
-            })
+            .fold(possible_set[0].clone(), |acc, &s| &acc & s)
     };
     probable_set = &probable_set - &seen;
-    println!(
-        "Here's a possible set for pos {:?} next {:?}",
-        curr_pos, probable_set
-    );
+    // println!(
+    //     "Here's a possible set for pos {:?} next {:?}",
+    //     curr_pos, probable_set
+    // );
 
     for possible_tile_id in probable_set {
         let tile = tiles.get(&possible_tile_id).unwrap();
-        println!("Evaluating tile_id {}", possible_tile_id);
+        // println!("Evaluating tile_id {}", possible_tile_id);
         for rotation in rotations(tile) {
             let matches_all_edges = neighbor_tile_edges.iter().enumerate().all(|(i, edge)| {
-                println!("neighbor edge at position {}: {}", i, edge);
+                // println!("neighbor edge at position {}: {}", i, edge);
                 if edge == "" {
                     return true;
                 }

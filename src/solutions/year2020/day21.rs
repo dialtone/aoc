@@ -1,3 +1,6 @@
+// day21 part 1            time:   [859.83 us 875.13 us 892.69 us]
+// day21 part 2            time:   [740.78 us 754.25 us 770.27 us]
+
 use super::*;
 
 use std::collections::*;
@@ -66,17 +69,17 @@ pub fn part2(input: &str) -> String {
         }
     }
 
-    println!("allergen_to_ingredients = {:?}", allergen_to_ingredients);
+    // println!("allergen_to_ingredients = {:?}", allergen_to_ingredients);
 
     let mut ingredient_to_allergen = HashMap::new();
     let allergens = allergen_to_ingredients.keys().copied().collect::<Vec<_>>();
     let allergens_num = allergens.len();
 
     while ingredient_to_allergen.keys().len() < allergens_num {
-        println!(
-            "ingredient to allergen found so far: {:?}",
-            ingredient_to_allergen.keys().collect::<Vec<_>>()
-        );
+        // println!(
+        //     "ingredient to allergen found so far: {:?}",
+        //     ingredient_to_allergen.keys().collect::<Vec<_>>()
+        // );
 
         // for each allergen
         for allergen in &allergens {

@@ -8,22 +8,25 @@ type Parsed = String;
 pub fn part1(input: &str) -> usize {
     let mut allergen_to_ingredients = HashMap::new();
     let mut all_ingredients = HashSet::new();
-    let mut foods = vec![];
+    let mut ingredient_count = HashMap::new();
+
     for line in input.lines() {
         let mut pieces = line.strip_suffix(")").unwrap().split(" (contains ");
-        let ingredients_joined = pieces.next().unwrap();
-        let allergens_joined = pieces.next().unwrap();
+        let ingredients = pieces.next().unwrap().split(" ").collect::<HashSet<_>>();
+        let allergens = pieces.next().unwrap().split(", ").collect::<HashSet<_>>();
 
-        let ingredients = ingredients_joined.split(" ").collect::<HashSet<_>>();
         all_ingredients = &all_ingredients | &ingredients;
-        let allergens = allergens_joined.split(", ").collect::<HashSet<_>>();
-        foods.push(ingredients.clone());
+        ingredients.iter().for_each(|ingredient| {
+            let counter = ingredient_count.entry(ingredient.to_owned()).or_insert(0);
+            *counter += 1;
+        });
 
+        // already calculates all the subset of ingredients that are likely to be allergenic
         for allergen in allergens {
-            allergen_to_ingredients
+            let entry = allergen_to_ingredients
                 .entry(allergen)
-                .or_insert(Vec::new())
-                .push(ingredients.clone())
+                .or_insert(ingredients.clone());
+            *entry = &*entry & &ingredients;
         }
     }
     println!("allergen_to_ingredients = {:?}", allergen_to_ingredients);
@@ -41,13 +44,7 @@ pub fn part1(input: &str) -> usize {
         // for each allergen
         for allergen in &allergens {
             // get the ingredients sets in which this allergen appears
-            let candidate_ingredient_sets = allergen_to_ingredients.get(allergen).unwrap();
-
-            // take the intersection among all of those sets
-            let set = candidate_ingredient_sets[0].clone();
-            let candidates_for_allergen = candidate_ingredient_sets[1..]
-                .iter()
-                .fold(set, |acc, x| &acc & x);
+            let candidates_for_allergen = allergen_to_ingredients.get(allergen).unwrap();
 
             // if the intersection is of size 1, then we've found a match
             if candidates_for_allergen.len() == 1 {
@@ -55,28 +52,18 @@ pub fn part1(input: &str) -> usize {
                 let ingredient_to_remove = candidates_for_allergen.iter().next().unwrap().clone();
                 ingredient_to_allergen.insert(ingredient_to_remove, allergen);
                 for (_, v) in allergen_to_ingredients.iter_mut() {
-                    for set in v {
-                        set.remove(ingredient_to_remove);
-                    }
+                    v.remove(ingredient_to_remove);
                 }
             }
         }
     }
 
-    println!("all_ingredients {:?}", all_ingredients);
-    let mut not_allergic = all_ingredients.clone();
-    for (found, _) in ingredient_to_allergen.iter() {
-        not_allergic.remove(found);
-    }
-    println!("not allergic {:?}", not_allergic);
-    let mut answer = 0;
-    for ingredient in not_allergic {
-        for food in &foods {
-            if food.contains(&ingredient) {
-                answer += 1;
-            }
-        }
-    }
+    let not_allergic = &all_ingredients - &ingredient_to_allergen.keys().copied().collect();
+
+    let answer = not_allergic
+        .iter()
+        .map(|k| ingredient_count.get(k).unwrap())
+        .sum();
 
     let sorted_by_allergens = ingredient_to_allergen
         .iter()
@@ -90,8 +77,8 @@ pub fn part1(input: &str) -> usize {
     answer
 }
 
-pub fn part2(input: &Parsed) -> usize {
-    5
+pub fn part2(input: &Parsed) -> String {
+    "ciao".to_owned()
 }
 
 pub fn parse(s: &Input) -> &Parsed {
@@ -115,7 +102,10 @@ sqjhc mxmxvkd sbzzf (contains fish)";
     #[test]
     fn day21() {
         let input = get_input(2020, 21).unwrap();
-        assert_eq!(part1(&parse(&input)), 2230);
-        // assert_eq!(part2(&parse(&input)), 5);
+        assert_eq!(part1(&&input), 2230);
+        // assert_eq!(
+        //     part2(&input),
+        //     "qqskn,ccvnlbp,tcm,jnqcd,qjqb,xjqd,xhzr,cjxv".to_owned()
+        // );
     }
 }

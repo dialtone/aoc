@@ -76,20 +76,21 @@ fn printgrid(full_grid: &Vec<Vec<Tile>>) {
     let default = " ".repeat(single_tile_cols);
 
     for i in 0..side_len * single_tile_rows {
+        if i % single_tile_rows == 0 && i > 0 {
+            println!("");
+            println!("");
+            println!("");
+        }
+
         for j in 0..side_len {
             print!(
-                "{}   ",
+                "{}     ",
                 full_grid[i / single_tile_rows][j]
                     .get(i % single_tile_rows)
                     .unwrap_or(&default)
             );
         }
         print!("\n");
-        if i % single_tile_rows == 0 && i > 0 {
-            println!("");
-            println!("");
-            println!("");
-        }
     }
     println!("");
     println!("+++++++");
@@ -289,29 +290,70 @@ pub fn part2(input: &str) -> usize {
         .collect();
 
     let onegrid = join_all_tiles(&clean_grid, "");
-    println!("{}", flipped(&rotated(&onegrid)).join("\n"));
-    //     let dragon = "                  #.{len}
-    // #    ##    ##    ###
-    //  #  #  #  #  #  #   ";
-
-    let line_len = onegrid[0].len();
-    let dragonrex = format!(
-        "..................#.{{{0}}}#....##....##....###.{{{1}}}#..#..#..#..#..#",
-        line_len - 20 + 1,
-        line_len - 20 + 1
-    );
-    println!("{}", dragonrex);
-    let rex = Regex::new(&dragonrex).unwrap();
-    let mut dragons = 0;
     for rotation in rotations(&onegrid) {
-        dragons = rex.find_iter(&rotation.join("")).count();
-        if dragons > 0 {
-            println!("found {} dragons", dragons);
-            dragons *= 15;
+        if rotation[0].starts_with("##.###..##..") {
+            println!("{}", rotation.join("\n"));
             break;
         }
     }
-    onegrid.join("").chars().filter(|x| *x == '#').count() - dragons
+
+    let dragon = "                  #
+#    ##    ##    ###
+ #  #  #  #  #  #   ";
+
+    let mut dots = vec![];
+    for (i, line) in dragon.lines().enumerate() {
+        for (j, dot) in line.chars().enumerate() {
+            if dot == '#' {
+                dots.push((i, j));
+            }
+        }
+    }
+
+    let mut dragon_cells = 0;
+    for rotation in rotations(&onegrid) {
+        let dragons = find_dragons(&rotation, &dots);
+        if dragons > 0 {
+            println!("found {} dragons", dragons);
+            dragon_cells = dragons * 15;
+            break;
+        }
+    }
+
+    // let line_len = onegrid[0].len();
+    // let dragonrex = format!(
+    //     "#.{{{0}}}#....##....##....###.{{{1}}}#..#..#..#..#..#",
+    //     line_len - 19,
+    //     line_len - 19
+    // );
+    // println!("{}", dragonrex);
+    // let rex = Regex::new(&dragonrex).unwrap();
+    // let mut dragons = 0;
+    // dragons = rex.find_iter(&onegrid.join("")).count();
+    // if dragons > 0 {
+    //     println!("found {} dragons", dragons);
+    //     dragons *= 15;
+    // }
+
+    onegrid.join("").chars().filter(|x| *x == '#').count() - dragon_cells
+}
+
+fn find_dragons(grid: &Tile, dots: &Vec<(usize, usize)>) -> usize {
+    let mut found = 0;
+    for row in 0..grid.len() {
+        for col in 0..grid[0].len() {
+            if dots.iter().all(|(x, y)| {
+                grid.get(row + *y)
+                    .and_then(|r| {
+                        Some(r.as_bytes().get(col + *x).unwrap_or(&('.' as u8)) == &('#' as u8))
+                    })
+                    .unwrap_or(false)
+            }) {
+                found += 1;
+            }
+        }
+    }
+    found
 }
 
 fn fill_grid(
@@ -335,7 +377,7 @@ fn fill_grid(
         for rotation in rotations(tile) {
             full_grid[curr_pos.1][curr_pos.0] = rotation; //rotated(&rotated(&flipped(tile)));
             println!("Filling pos {:?} with tile {}:", curr_pos, tile_id);
-            printgrid(full_grid);
+            // printgrid(full_grid);
             if fill_grid(
                 full_grid,
                 side_len,
@@ -355,7 +397,7 @@ fn fill_grid(
     }
 
     println!("\n\ncurrent grid:");
-    printgrid(full_grid);
+    // printgrid(full_grid);
     println!("Filling pos {:?}", curr_pos);
 
     //
@@ -690,6 +732,6 @@ Tile 3079:
     fn day20() {
         let input = get_input(2020, 20).unwrap();
         assert_eq!(part1(&input), 174206308298779);
-        assert_eq!(part2(&input), 5);
+        assert_eq!(part2(&input), 2409);
     }
 }

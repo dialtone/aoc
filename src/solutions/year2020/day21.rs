@@ -65,6 +65,7 @@ pub fn part2(input: &str) -> String {
             *entry = &*entry & &ingredients;
         }
     }
+    let _a = 54;
 
     let mut ingredient_to_allergen = HashMap::new();
 
@@ -76,9 +77,9 @@ pub fn part2(input: &str) -> String {
         // ingredient_set is len == 1 from the while condition, so let's just get the ingredient
         let ingredient = allergen_to_ingredients[allergen]
             .iter()
+            .copied()
             .next()
-            .unwrap()
-            .clone();
+            .unwrap();
         ingredient_to_allergen.insert(ingredient, allergen);
         for (_, v) in allergen_to_ingredients.iter_mut() {
             v.remove(ingredient);

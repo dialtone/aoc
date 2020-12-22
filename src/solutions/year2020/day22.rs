@@ -5,6 +5,45 @@
 // the right check instead runs in 700ms
 // day22 part 2            time:   [695.97 ms 699.92 ms 704.00 ms]
 
+// with my own hasher this would probably be a lot faster
+// #[derive(Clone, Copy)]
+// struct DoNothingHasher(u64);
+// impl std::hash::Hasher for DoNothingHasher {
+//     fn finish(&self) -> u64 {
+//         self.0
+//     }
+
+//     fn write(&mut self, bytes: &[u8]) {
+//         self.0 = u64::from_le_bytes(std::convert::TryInto::try_into(bytes).unwrap());
+//     }
+// }
+// impl std::hash::BuildHasher for DoNothingHasher {
+//     type Hasher = Self;
+//     fn build_hasher(&self) -> Self::Hasher {
+//         *self
+//     }
+// }
+
+// fn hash_decks(state: (&VecDeque<u8>, &VecDeque<u8>)) -> u64 {
+//     use std::collections::hash_map::DefaultHasher;
+//     use std::hash::{Hash, Hasher};
+//     let mut hasher = DefaultHasher::new();
+//     state.hash(&mut hasher);
+//     hasher.finish()
+// }
+
+// use as
+// use std::collections::HashSet;
+// // let mut prev_rounds = HashSet::with_capacity(1024);
+// // Use do nothing hasher because the key is already a hash.
+// let mut seen = HashSet::with_capacity_and_hasher(1024, DoNothingHasher(0));
+// while !deck1.is_empty() && !deck2.is_empty() {
+//     let decks = hash_decks((deck1, deck2));
+//     if seen.contains(&decks) {
+//         return true;
+//     }
+//     seen.insert(decks);
+
 use super::*;
 
 use std::collections::*;

@@ -1,5 +1,9 @@
 // day22 part 1            time:   [4.7868 us 4.8425 us 4.9031 us]
 // day22 part 2            time:   [428.49 ms 431.63 ms 434.89 ms]
+// with a single check if you want to cheat?
+// day22 part 2            time:   [123.03 ms 124.29 ms 125.72 ms]
+// the right check instead runs in 700ms
+// day22 part 2            time:   [695.97 ms 699.92 ms 704.00 ms]
 
 use super::*;
 
@@ -71,15 +75,22 @@ fn play_game(
     mut deck1: VecDeque<usize>,
     mut deck2: VecDeque<usize>,
 ) -> (usize, VecDeque<usize>, VecDeque<usize>) {
-    let mut seen1 = HashSet::new();
-    let mut seen2 = HashSet::new();
+    // let mut seen1 = HashSet::new();
+    // let mut seen2 = HashSet::new();
+    let mut seen = HashSet::new();
 
     while !deck1.is_empty() && !deck2.is_empty() {
-        if seen1.contains(&deck1) && seen2.contains(&deck2) {
+        // if seen1.contains(&deck1) && seen2.contains(&deck2) {
+        //     return (1, deck1, deck2);
+        // }
+        // seen1.insert(deck1.clone());
+        // seen2.insert(deck2.clone());
+
+        let decks = (deck1.clone(), deck2.clone());
+        if seen.contains(&decks) {
             return (1, deck1, deck2);
         }
-        seen1.insert(deck1.clone());
-        seen2.insert(deck2.clone());
+        seen.insert(decks);
 
         let player1_card = deck1.pop_front().unwrap();
         let player2_card = deck2.pop_front().unwrap();

@@ -213,6 +213,13 @@ fn bench_day22(c: &mut Criterion) {
     c.bench_function("day22 part 2", |b| b.iter(|| part2(&raw_input)));
 }
 
+fn bench_day23(c: &mut Criterion) {
+    use aoc::solutions::year2020::day23::{part1, part2};
+    let raw_input = aoc::input::get_input(2020, 23).unwrap();
+    c.bench_function("day23 part 1", |b| b.iter(|| part1(&raw_input)));
+    c.bench_function("day23 part 2", |b| b.iter(|| part2(&raw_input)));
+}
+
 // criterion_group! {
 //     name = benches;
 //     config = Criterion::default().sample_size(10);
@@ -246,6 +253,7 @@ criterion_group!(
     bench_day20,
     bench_day21,
     bench_day22,
+    bench_day23,
 );
 
 criterion_main!(benches);

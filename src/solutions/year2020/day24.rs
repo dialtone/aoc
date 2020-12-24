@@ -1,28 +1,27 @@
-// day24 part 1            time:   [1.3879 ms 1.4111 ms 1.4374 ms]
-// day24 part 2            time:   [66.958 ms 67.954 ms 69.104 ms]
-
+// day24 part 1            time:   [359.49 us 363.21 us 367.76 us]
+// day24 part 2            time:   [65.029 ms 65.830 ms 66.745 ms]
 use super::*;
 
 use std::collections::*;
 
-type Path = Vec<String>;
-type Paths = Vec<Path>;
+type Path<'a> = Vec<&'a [u8]>;
+type Paths<'a> = Vec<Path<'a>>;
 type Pos = (isize, isize, isize);
 
-pub fn parse(input: &str) -> Paths {
-    let mut prev_b = '0';
+pub fn parse<'a>(input: &'a str) -> Paths<'a> {
+    let mut prev_b = None;
     let mut paths: Paths = vec![];
     for line in input.lines() {
         let mut path: Path = vec![];
-        for b in line.chars() {
+        for (i, b) in line.as_bytes().iter().enumerate() {
             // e, se, sw, w, nw, and ne
             match (prev_b, b) {
-                ('s' | 'n', _) => {
-                    path.push([prev_b, b].iter().copied().collect());
-                    prev_b = '0';
+                (Some(j), _) => {
+                    path.push(&line.as_bytes()[j..=i]);
+                    prev_b = None;
                 }
-                (_, 'e' | 'w') => path.push(b.to_string()),
-                (_, 's' | 'n') => prev_b = b,
+                (None, b'e' | b'w') => path.push(&line.as_bytes()[i..i + 1]),
+                (None, b's' | b'n') => prev_b = Some(i),
                 _ => continue,
             }
         }
@@ -35,14 +34,14 @@ pub fn initialize(paths: &Paths) -> HashSet<Pos> {
     let mut black: HashSet<Pos> = HashSet::new();
     for path in paths {
         let mut pos = (0, 0, 0);
-        for step in path {
-            match step.as_str() {
-                "ne" => pos = (pos.0, pos.1 - 1, pos.2 + 1),
-                "nw" => pos = (pos.0 - 1, pos.1, pos.2 + 1),
-                "e" => pos = (pos.0 + 1, pos.1 - 1, pos.2),
-                "w" => pos = (pos.0 - 1, pos.1 + 1, pos.2),
-                "sw" => pos = (pos.0, pos.1 + 1, pos.2 - 1),
-                "se" => pos = (pos.0 + 1, pos.1, pos.2 - 1),
+        for &step in path {
+            match step {
+                b"ne" => pos = (pos.0, pos.1 - 1, pos.2 + 1),
+                b"nw" => pos = (pos.0 - 1, pos.1, pos.2 + 1),
+                b"e" => pos = (pos.0 + 1, pos.1 - 1, pos.2),
+                b"w" => pos = (pos.0 - 1, pos.1 + 1, pos.2),
+                b"sw" => pos = (pos.0, pos.1 + 1, pos.2 - 1),
+                b"se" => pos = (pos.0 + 1, pos.1, pos.2 - 1),
                 _ => unreachable!(),
             }
         }

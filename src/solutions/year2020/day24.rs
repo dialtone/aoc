@@ -88,16 +88,10 @@ pub fn part2(input: &str) -> usize {
         }
 
         for (&tile_pos, &black_neighbors) in cnts.iter() {
-            if last.contains(&tile_pos) {
-                if black_neighbors == 1 || black_neighbors == 2 {
-                    // this is a black tile staying black
-                    next.insert(tile_pos);
-                }
-            } else {
-                // this is a white tile
-                if black_neighbors == 2 {
-                    next.insert(tile_pos);
-                }
+            if black_neighbors == 2 {
+                next.insert(tile_pos);
+            } else if black_neighbors == 1 && last.contains(&tile_pos) {
+                next.insert(tile_pos);
             }
         }
         cnts.clear();

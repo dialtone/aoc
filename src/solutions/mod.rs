@@ -5,3 +5,4 @@ use lazy_static::lazy_static;
 use serde_scan::scan;
 
 pub mod year2020;
+pub mod year2022;

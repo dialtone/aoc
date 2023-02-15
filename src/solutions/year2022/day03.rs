@@ -1,17 +1,17 @@
 use itertools::Itertools;
 use std::collections::HashSet;
 
-type Parsed = Vec<(HashSet<char>, HashSet<char>)>;
+pub fn part1(input: &str) -> u64 {
+    input
+        .lines()
+        .map(|l| {
+            let half = l.chars().count() / 2;
 
-pub fn part1(input: &Parsed) -> u64 {
-    let mut tot = 0;
-
-    for (comp1, comp2) in input {
-        let r = comp1.intersection(comp2);
-        tot += r.into_iter().map(|&c| priority(c)).sum::<u64>();
-    }
-
-    tot
+            let c1: HashSet<char> = l.chars().take(half).collect();
+            let c2: HashSet<char> = l.chars().skip(half).collect();
+            c1.intersection(&c2).map(|&c| priority(c)).sum::<u64>()
+        })
+        .sum()
 }
 
 pub fn priority(c: char) -> u64 {
@@ -43,22 +43,6 @@ pub fn parse2(s: &str) -> u64 {
     res
 }
 
-pub fn parse1(s: &str) -> Parsed {
-    let mut res = vec![];
-
-    for line in s.lines() {
-        let chars = line.trim().chars();
-        let half = chars.count() / 2;
-
-        let compart_1: HashSet<char> = line.chars().take(half).collect();
-        let compart_2: HashSet<char> = line.chars().skip(half).take(half).collect();
-
-        res.push((compart_1, compart_2));
-    }
-
-    res
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -72,16 +56,14 @@ PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw";
-        let parsed = parse1(input);
-        assert_eq!(part1(&parsed), 157);
-        assert_eq!(parse2(input), 12);
+        assert_eq!(part1(input), 157);
+        assert_eq!(parse2(input), 70);
     }
 
     #[test]
     fn day03() {
         let input = get_input(2022, 3).unwrap();
-        let parsed = parse1(&input);
-        assert_eq!(part1(&parsed), 8394);
-        assert_eq!(parse2(&input), 12);
+        assert_eq!(part1(&input), 8394);
+        assert_eq!(parse2(&input), 2413);
     }
 }

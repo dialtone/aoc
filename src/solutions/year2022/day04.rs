@@ -61,7 +61,7 @@ mod tests {
     }
 
     #[test]
-    fn day03() {
+    fn day04() {
         let input = get_input(2022, 4).unwrap();
         assert_eq!(part1(&input), 644);
         assert_eq!(part2(&input), 926);

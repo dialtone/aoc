@@ -39,13 +39,13 @@ fn bench_day5(c: &mut Criterion) {
     c.bench_function("day5 part 2", |b| b.iter(|| part2(&input)));
 }
 
-fn bench_day6(c: &mut Criterion) {
-    use aoc::solutions::year2020::day06::{parse, part1, part2};
-    let raw_input = aoc::input::get_input(2020, 6).unwrap();
-    c.bench_function("day6 parse", |b| b.iter(|| parse(&raw_input)));
-    c.bench_function("day6 part 1", |b| b.iter(|| part1(&raw_input)));
-    c.bench_function("day6 part 2", |b| b.iter(|| part2(&raw_input)));
-}
+// fn bench_day6(c: &mut Criterion) {
+//     use aoc::solutions::year2020::day06::{parse, part1, part2};
+//     let raw_input = aoc::input::get_input(2020, 6).unwrap();
+//     c.bench_function("day6 parse", |b| b.iter(|| parse(&raw_input)));
+//     c.bench_function("day6 part 1", |b| b.iter(|| part1(&raw_input)));
+//     c.bench_function("day6 part 2", |b| b.iter(|| part2(&raw_input)));
+// }
 
 fn bench_day7(c: &mut Criterion) {
     use aoc::solutions::year2020::day07::{parse, parse_right, part1, part2};
@@ -114,14 +114,14 @@ fn bench_day12(c: &mut Criterion) {
     c.bench_function("day12 part 2", |b| b.iter(|| part2(&input)));
 }
 
-fn bench_day13(c: &mut Criterion) {
-    use aoc::solutions::year2020::day13::{parse, part1, part2};
-    let raw_input = aoc::input::get_input(2020, 13).unwrap();
-    c.bench_function("day13 parse", |b| b.iter(|| parse(&raw_input)));
-    let input = parse(&raw_input);
-    // c.bench_function("day13 part 1", |b| b.iter(|| part1(&input)));
-    // c.bench_function("day13 part 2", |b| b.iter(|| part2(&input)));
-}
+// fn bench_day13(c: &mut Criterion) {
+//     use aoc::solutions::year2020::day13::{parse, part1, part2};
+//     let raw_input = aoc::input::get_input(2020, 13).unwrap();
+//     c.bench_function("day13 parse", |b| b.iter(|| parse(&raw_input)));
+//     let input = parse(&raw_input);
+//     // c.bench_function("day13 part 1", |b| b.iter(|| part1(&input)));
+//     // c.bench_function("day13 part 2", |b| b.iter(|| part2(&input)));
+// }
 
 fn bench_day14(c: &mut Criterion) {
     use aoc::solutions::year2020::day14::{parse, part1, part2};
@@ -246,7 +246,7 @@ criterion_group!(
     bench_day3,
     bench_day4,
     bench_day5,
-    bench_day6,
+    // bench_day6,
     bench_day7,
     bench_day7_graphlib,
     bench_day8,
@@ -254,7 +254,7 @@ criterion_group!(
     bench_day10,
     bench_day11,
     bench_day12,
-    bench_day13,
+    // bench_day13,
     bench_day14,
     bench_day14b,
     bench_day15,

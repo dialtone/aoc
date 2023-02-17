@@ -1,26 +1,26 @@
 use std::collections::{HashMap, VecDeque};
 
-struct Node {
-    name: String,
-    files: Vec<(String, usize)>,
+pub struct Node {
+    files: Vec<usize>,
     pub dirs: HashMap<String, Node>,
+    tsize: Option<usize>,
 }
 
 impl Node {
-    pub fn new(name: &str) -> Self {
+    pub fn new() -> Self {
         Self {
-            name: name.to_string(),
             files: vec![],
             dirs: HashMap::new(),
+            tsize: None,
         }
     }
 
     pub fn add_dir(&mut self, name: &str) {
-        self.dirs.insert(name.to_string(), Node::new(name));
+        self.dirs.insert(name.to_string(), Node::new());
     }
 
-    pub fn add_file(&mut self, name: &str, size: usize) {
-        self.files.push((name.to_string(), size));
+    pub fn add_file(&mut self, size: usize) {
+        self.files.push(size);
     }
 
     pub fn cd(&mut self, name: &str) -> Option<&mut Node> {
@@ -39,15 +39,27 @@ impl Node {
         Some(curr_node)
     }
 
-    pub fn size(&self) -> usize {
-        let local_size: usize = self.files.iter().map(|(_, s)| s).sum();
-        let children_size: usize = self.dirs.values().map(|v| v.size()).sum();
-        local_size + children_size
+    pub fn size(&mut self) -> usize {
+        if let Some(tsize) = self.tsize {
+            return tsize;
+        }
+        let local_size: usize = self.files.iter().sum();
+        let children_size: usize = self.dirs.values_mut().map(|v| v.size()).sum();
+        let tsize = local_size + children_size;
+        self.tsize = Some(tsize);
+        tsize
     }
 }
 
-pub fn part1(input: &str) -> usize {
-    let mut root = Node::new("/");
+impl Default for Node {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+// year 22 day07 parse     time:   [62.322 µs 62.417 µs 62.516 µs]
+pub fn parse(input: &str) -> Node {
+    let mut root = Node::new();
     let mut curr_node = &mut root;
     let mut ls_mode = false;
 
@@ -63,8 +75,9 @@ pub fn part1(input: &str) -> usize {
                 curr_node.add_dir(dirname);
                 continue;
             }
-            let (filesize, filename) = line.split_once(' ').unwrap();
-            curr_node.add_file(filename, filesize.parse::<usize>().unwrap());
+            let (filesize, _) = line.split_once(' ').unwrap();
+            curr_node.add_file(filesize.parse::<usize>().unwrap());
+            continue;
         }
 
         if let Some(new_dir) = line.strip_prefix("$ cd ") {
@@ -85,9 +98,14 @@ pub fn part1(input: &str) -> usize {
             continue;
         }
     }
+    root
+}
 
+// year 22 day07 part 1    time:   [66.228 µs 66.312 µs 66.404 µs]
+pub fn part1(input: &str) -> usize {
+    let mut root = parse(input);
     let mut q = VecDeque::new();
-    q.push_back(&root);
+    q.push_back(&mut root);
     let mut res = 0;
 
     while let Some(node) = q.pop_front() {
@@ -96,16 +114,38 @@ pub fn part1(input: &str) -> usize {
             res += node_size;
         }
 
-        for subdir in node.dirs.values() {
+        for subdir in node.dirs.values_mut() {
             q.push_front(subdir);
         }
     }
     res
 }
 
-// year 22 day06 part 2    time:   [18.139 µs 18.239 µs 18.344 µs]
+// year 22 day07 part 2    time:   [67.164 µs 67.619 µs 68.145 µs]
 pub fn part2(input: &str) -> usize {
-    0
+    let mut root = parse(input);
+
+    let total_size = root.size();
+    let disk_capacity = 70_000_000;
+    let space_needed = 30_000_000usize;
+
+    let minimum_dir_size = space_needed - (disk_capacity - total_size);
+    let mut found_dir = disk_capacity;
+
+    let mut q = VecDeque::new();
+    q.push_back(&mut root);
+
+    while let Some(node) = q.pop_front() {
+        let node_size = node.size();
+        if node_size >= minimum_dir_size && found_dir > node_size {
+            found_dir = node_size
+        }
+
+        for subdir in node.dirs.values_mut() {
+            q.push_front(subdir);
+        }
+    }
+    found_dir
 }
 
 #[cfg(test)]
@@ -139,13 +179,13 @@ $ ls
 5626152 d.ext
 7214296 k";
         assert_eq!(part1(input), 95437);
-        // assert_eq!(part2(input), 26);
+        assert_eq!(part2(input), 24933642);
     }
 
     #[test]
     fn day07() {
         let input = get_input(2022, 7).unwrap();
         assert_eq!(part1(&input), 1611443);
-        assert_eq!(part2(&input), 2263);
+        assert_eq!(part2(&input), 2086088);
     }
 }

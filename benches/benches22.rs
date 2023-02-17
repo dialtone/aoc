@@ -22,6 +22,21 @@ fn bench_22day06(c: &mut Criterion) {
     c.bench_function("year 22 day06 part 2b", |b| b.iter(|| part2b(&raw_input)));
     c.bench_function("year 22 day06 part 2c", |b| b.iter(|| part2c(&raw_input)));
 }
-criterion_group!(benches22, bench_22day05, bench_22day05b, bench_22day06);
+
+fn bench_22day07(c: &mut Criterion) {
+    use aoc::solutions::year2022::day07::{parse, part1, part2};
+    let raw_input = aoc::input::get_input(2022, 7).unwrap();
+    c.bench_function("year 22 day07 parse", |b| b.iter(|| parse(&raw_input)));
+    c.bench_function("year 22 day07 part 1", |b| b.iter(|| part1(&raw_input)));
+    c.bench_function("year 22 day07 part 2", |b| b.iter(|| part2(&raw_input)));
+}
+
+criterion_group!(
+    benches22,
+    bench_22day05,
+    bench_22day05b,
+    bench_22day06,
+    bench_22day07
+);
 
 criterion_main!(benches22);

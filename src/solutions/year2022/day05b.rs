@@ -1,42 +1,31 @@
-use std::collections::VecDeque;
-
-type Moves = Vec<(usize, usize, usize)>;
-type Crates = Vec<VecDeque<char>>;
+type Move = (usize, usize, usize);
+type Stacks = Vec<Vec<char>>;
+type ParsedData = (Stacks, Vec<Move>);
 
 pub fn part1(input: &str) -> String {
-    let (mut crates, moves) = parse(input);
-    for (take, from_, to_) in moves {
-        for _ in 0..take {
-            let crate_ = crates[from_ - 1].pop_front().unwrap();
-            crates[to_ - 1].push_front(crate_);
+    let (mut stacks, moves) = parse(input);
+    for (cnt, from, to) in moves.iter() {
+        for _ in 0..*cnt {
+            let moved = stacks[*from - 1].pop().unwrap();
+            let _ = &stacks[*to - 1].push(moved);
         }
     }
-    crates
-        .iter()
-        .filter_map(|stack| stack.get(0))
-        .collect::<String>()
+    stacks.iter().filter_map(|s| s.last()).collect()
 }
 
 pub fn part2(input: &str) -> String {
-    let (mut crates, moves) = parse(input);
-    for (take, from_, to_) in moves {
-        let new_stack = crates[from_ - 1].split_off(take);
-        while !crates[from_ - 1].is_empty() {
-            if let Some(item) = crates[from_ - 1].pop_back() {
-                crates[to_ - 1].push_front(item);
-            }
-        }
-        crates[from_ - 1] = new_stack;
+    let (mut stacks, moves) = parse(input);
+    for (cnt, from, to) in moves.iter() {
+        let from_stack = &mut stacks[*from - 1];
+        let mut suffix = from_stack.drain((from_stack.len() - cnt)..).collect();
+        stacks[*to - 1].append(&mut suffix);
     }
-    crates
-        .iter()
-        .filter_map(|stack| stack.get(0))
-        .collect::<String>()
+    stacks.iter().filter_map(|s| s.last()).collect()
 }
 
-fn parse(input: &str) -> (Crates, Moves) {
+fn parse(input: &str) -> ParsedData {
     let mut moves = vec![];
-    let mut crates = vec![VecDeque::new(); 9];
+    let mut crates = vec![vec!(); 9];
     for line in input.lines() {
         if line.is_empty() {
             continue;
@@ -60,11 +49,15 @@ fn parse(input: &str) -> (Crates, Moves) {
                 if c == ' ' {
                     continue;
                 }
-                slot.push_back(c);
+                slot.push(c);
             } else {
                 break;
             }
         }
+    }
+
+    for slot in crates.iter_mut() {
+        slot.reverse();
     }
 
     (crates, moves)

@@ -1,5 +1,6 @@
 use super::*;
 use std::collections::BTreeSet;
+use std::iter::FromIterator;
 
 // day6 parse              time:   [158.82 us 161.46 us 164.61 us]
 pub fn parse(input: &String) -> Vec<Vec<u32>> {
@@ -74,7 +75,7 @@ pub fn part2(input: &String) -> usize {
         .map(|answers| {
             answers
                 .lines()
-                .fold(BTreeSet::from(('a'..='z').collect()), |acc, row| {
+                .fold(BTreeSet::from_iter('a'..='z'), |acc, row| {
                     acc.intersection(&row.chars().collect()).cloned().collect()
                 })
                 .len()

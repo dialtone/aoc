@@ -60,8 +60,8 @@ pub fn part2(input: &Parsed) -> usize {
     let mut float_masks = Vec::new();
 
     for op in input {
-        match op {
-            &Operation::Mask(mask) => {
+        match *op {
+            Operation::Mask(mask) => {
                 or_mask = 0;
                 float_masks = Vec::new();
                 let mut or_floats = Vec::new();
@@ -72,12 +72,12 @@ pub fn part2(input: &Parsed) -> usize {
                             and_float = and_float << 1 | 1;
                         }
                         '0' => {
-                            or_mask = or_mask << 1;
+                            or_mask <<= 1;
                             and_float = and_float << 1 | 1;
                         }
                         'X' => {
-                            or_mask = or_mask << 1;
-                            and_float = and_float << 1;
+                            or_mask <<= 1;
+                            and_float <<= 1;
                             or_floats.push(35 - i);
                         }
                         _ => unreachable!(),
@@ -88,12 +88,12 @@ pub fn part2(input: &Parsed) -> usize {
                 for i in 0..(2usize).pow(n_floats as u32) {
                     let mut float_mask = 0usize;
                     for (j, float_id) in or_floats.iter().rev().enumerate() {
-                        float_mask |= (i & (1 << j)) << float_id - j;
+                        float_mask |= (i & (1 << j)) << (float_id - j);
                     }
                     float_masks.push(float_mask);
                 }
             }
-            &Operation::Mem(loc, val) => {
+            Operation::Mem(loc, val) => {
                 let decoded_loc = (loc | or_mask) & and_float;
                 // neat trick with xor for the combinations.
                 // let index = index | current_or_mask;

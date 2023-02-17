@@ -1,5 +1,4 @@
 use super::*;
-use num_integer::Integer;
 
 type Input = String;
 type Time = usize;
@@ -11,7 +10,7 @@ pub fn part1(goal: Time, input: &Parsed) -> usize {
         if *num == 0 {
             continue;
         }
-        let div = goal.div_ceil(num);
+        let div = num_integer::div_ceil(goal, *num);
         res.push((div * num - goal, *num));
     }
     res.sort_by_key(|&(a, _)| a);

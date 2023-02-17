@@ -14,16 +14,16 @@ name = "benches22"
 harness = false
 
 [dependencies]
-reqwest = { version = "0.10", features = [ "blocking", "gzip", "cookies" ] }
+reqwest = { version = "0.11", features = [ "blocking", "gzip", "cookies" ] }
 thiserror = "1.0"
-itertools = "0.9"
+itertools = "0.10"
 regex = "1"
 bytecount = "0.6"
 lazy_static = "1.4"
 serde_scan = "0.4.1"
-num = "0.3"
-petgraph = "0.5"
+num = "0.4"
+petgraph = "0.6"
 num-integer = "0.1"
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.4"

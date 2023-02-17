@@ -4,10 +4,10 @@ type ParsedData = (Stacks, Vec<Move>);
 
 pub fn part1(input: &str) -> String {
     let (mut stacks, moves) = parse(input);
-    for (cnt, from, to) in moves.iter() {
-        for _ in 0..*cnt {
-            let moved = stacks[*from - 1].pop().unwrap();
-            let _ = &stacks[*to - 1].push(moved);
+    for (cnt, from, to) in moves {
+        for _ in 0..cnt {
+            let moved = stacks[from - 1].pop().unwrap();
+            stacks[to - 1].push(moved);
         }
     }
     stacks.iter().filter_map(|s| s.last()).collect()
@@ -15,10 +15,10 @@ pub fn part1(input: &str) -> String {
 
 pub fn part2(input: &str) -> String {
     let (mut stacks, moves) = parse(input);
-    for (cnt, from, to) in moves.iter() {
-        let from_stack = &mut stacks[*from - 1];
+    for (cnt, from, to) in moves {
+        let from_stack = &mut stacks[from - 1];
         let mut suffix = from_stack.drain((from_stack.len() - cnt)..).collect();
-        stacks[*to - 1].append(&mut suffix);
+        stacks[to - 1].append(&mut suffix);
     }
     stacks.iter().filter_map(|s| s.last()).collect()
 }

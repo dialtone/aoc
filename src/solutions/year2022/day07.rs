@@ -1,22 +1,24 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 
 pub struct Node {
+    name: String,
     files: Vec<usize>,
-    pub dirs: HashMap<String, Node>,
+    pub dirs: Vec<Node>,
     tsize: Option<usize>,
 }
 
 impl Node {
-    pub fn new() -> Self {
+    pub fn new(name: &str) -> Self {
         Self {
+            name: name.to_string(),
             files: vec![],
-            dirs: HashMap::new(),
+            dirs: vec![],
             tsize: None,
         }
     }
 
     pub fn add_dir(&mut self, name: &str) {
-        self.dirs.insert(name.to_string(), Node::new());
+        self.dirs.push(Node::new(name));
     }
 
     pub fn add_file(&mut self, size: usize) {
@@ -24,7 +26,7 @@ impl Node {
     }
 
     pub fn cd(&mut self, name: &str) -> Option<&mut Node> {
-        self.dirs.get_mut(name)
+        self.dirs.iter_mut().find(|n| n.name == name)
     }
 
     pub fn get_path(&mut self, path: &Vec<&str>) -> Option<&mut Node> {
@@ -44,22 +46,17 @@ impl Node {
             return tsize;
         }
         let local_size: usize = self.files.iter().sum();
-        let children_size: usize = self.dirs.values_mut().map(|v| v.size()).sum();
+        let children_size: usize = self.dirs.iter_mut().map(|v| v.size()).sum();
         let tsize = local_size + children_size;
         self.tsize = Some(tsize);
         tsize
     }
 }
 
-impl Default for Node {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-// year 22 day07 parse     time:   [62.322 µs 62.417 µs 62.516 µs]
+// year 22 day07 parse     time:   [62.322 µs 62.417 µs 62.516 µs] first version with hashmap
+// year 22 day07 parse     time:   [45.368 µs 45.547 µs 45.749 µs] current version with vec
 pub fn parse(input: &str) -> Node {
-    let mut root = Node::new();
+    let mut root = Node::new("/");
     let mut curr_node = &mut root;
     let mut ls_mode = false;
 
@@ -101,7 +98,8 @@ pub fn parse(input: &str) -> Node {
     root
 }
 
-// year 22 day07 part 1    time:   [66.228 µs 66.312 µs 66.404 µs]
+// year 22 day07 part 1    time:   [66.228 µs 66.312 µs 66.404 µs] with hashmap
+// year 22 day07 part 1    time:   [46.898 µs 47.033 µs 47.194 µs] with vec
 pub fn part1(input: &str) -> usize {
     let mut root = parse(input);
     let mut q = VecDeque::new();
@@ -114,14 +112,15 @@ pub fn part1(input: &str) -> usize {
             res += node_size;
         }
 
-        for subdir in node.dirs.values_mut() {
+        for subdir in node.dirs.iter_mut() {
             q.push_front(subdir);
         }
     }
     res
 }
 
-// year 22 day07 part 2    time:   [67.164 µs 67.619 µs 68.145 µs]
+// year 22 day07 part 2    time:   [67.164 µs 67.619 µs 68.145 µs] with hashmap
+// year 22 day07 part 2    time:   [47.395 µs 47.857 µs 48.310 µs] with vec
 pub fn part2(input: &str) -> usize {
     let mut root = parse(input);
 
@@ -141,7 +140,7 @@ pub fn part2(input: &str) -> usize {
             found_dir = node_size
         }
 
-        for subdir in node.dirs.values_mut() {
+        for subdir in node.dirs.iter_mut() {
             q.push_front(subdir);
         }
     }

@@ -7,7 +7,7 @@ pub mod day04;
 pub mod day05;
 pub mod day05b;
 pub mod day06;
-// pub mod day07; // bags inside bags
+pub mod day07;
 // pub mod day07_graphlib; // with graph library
 // pub mod day08; // vm
 // pub mod day09;

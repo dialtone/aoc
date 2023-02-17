@@ -1,6 +1,11 @@
 use itertools::Itertools;
+use lazy_static::lazy_static;
 use std::collections::HashSet;
 use std::iter::FromIterator;
+
+lazy_static! {
+    static ref COMBO14: Vec<(usize, usize)> = (0..14).tuple_combinations().collect();
+}
 
 // year 22 day06 part 1    time:   [1.4595 µs 1.4607 µs 1.4622 µs]
 pub fn part1(input: &str) -> usize {
@@ -32,6 +37,17 @@ pub fn part2b(input: &str) -> usize {
     for (i, message) in input.windows(14).enumerate() {
         let set: HashSet<&char> = HashSet::from_iter(message);
         if set.len() == 14 {
+            return i + 14;
+        }
+    }
+    0
+}
+
+// year 22 day06 part 2c   time:   [24.411 µs 24.471 µs 24.541 µs]
+pub fn part2c(input: &str) -> usize {
+    let input = input.chars().collect::<Vec<char>>();
+    for (i, message) in input.windows(14).enumerate() {
+        if !COMBO14.iter().any(|&(a, b)| message[a] == message[b]) {
             return i + 14;
         }
     }
@@ -74,5 +90,6 @@ mod tests {
         assert_eq!(part1(&input), 1134);
         assert_eq!(part2(&input), 2263);
         assert_eq!(part2b(&input), 2263);
+        assert_eq!(part2c(&input), 2263);
     }
 }

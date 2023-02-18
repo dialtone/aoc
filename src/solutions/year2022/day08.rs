@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use rustc_hash::FxHashSet;
 
 pub fn parse(input: &str) -> Vec<Vec<u8>> {
     let mut field: Vec<Vec<u8>> = vec![];
@@ -8,8 +8,8 @@ pub fn parse(input: &str) -> Vec<Vec<u8>> {
     field
 }
 
-pub fn find_candidates(field: &[Vec<u8>]) -> HashSet<(usize, usize)> {
-    let mut visible: HashSet<(usize, usize)> = HashSet::new();
+pub fn find_candidates(field: &[Vec<u8>]) -> FxHashSet<(usize, usize)> {
+    let mut visible: FxHashSet<(usize, usize)> = FxHashSet::default();
 
     for x in 0..field[0].len() {
         // down
@@ -55,12 +55,14 @@ pub fn find_candidates(field: &[Vec<u8>]) -> HashSet<(usize, usize)> {
     visible
 }
 
+// year 22 day08 part 1    time:   [59.929 µs 60.195 µs 60.472 µs]
 pub fn part1(input: &str) -> usize {
     let field = parse(input);
     let visible = find_candidates(&field);
     visible.len()
 }
 
+// year 22 day08 part 2    time:   [133.62 µs 134.95 µs 136.40 µs]
 pub fn part2(input: &str) -> usize {
     let field = parse(input);
     let visible = find_candidates(&field);

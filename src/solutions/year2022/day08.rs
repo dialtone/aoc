@@ -77,43 +77,31 @@ pub fn part2(input: &str) -> usize {
         let mut acc = 1;
         // left
         for (distance, tree_pos) in (0..x).rev().enumerate() {
-            if height <= field[y][tree_pos] {
+            if height <= field[y][tree_pos] || tree_pos == 0 {
                 acc *= distance + 1;
                 break;
-            }
-            if tree_pos == 0 {
-                acc *= distance + 1;
             }
         }
 
         // right
         for (distance, tree_pos) in (x + 1..s).enumerate() {
-            if height <= field[y][tree_pos] {
+            if height <= field[y][tree_pos] || tree_pos == s - 1 {
                 acc *= distance + 1;
                 break;
-            }
-            if tree_pos == s - 1 {
-                acc *= distance + 1;
             }
         }
         // up
         for (distance, tree_pos) in (0..y).rev().enumerate() {
-            if height <= field[tree_pos][x] {
+            if height <= field[tree_pos][x] || tree_pos == 0 {
                 acc *= distance + 1;
                 break;
-            }
-            if tree_pos == 0 {
-                acc *= distance + 1;
             }
         }
         // down
         for (distance, tree_pos) in (y + 1..s).enumerate() {
-            if height <= field[tree_pos][x] {
+            if height <= field[tree_pos][x] || tree_pos == s - 1 {
                 acc *= distance + 1;
                 break;
-            }
-            if tree_pos == s - 1 {
-                acc *= distance + 1;
             }
         }
 

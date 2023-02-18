@@ -61,45 +61,61 @@ pub fn part1(input: &str) -> usize {
     visible.len()
 }
 
-static RIGHT: (i8, i8) = (1, 0);
-static LEFT: (i8, i8) = (-1, 0);
-static UP: (i8, i8) = (0, -1);
-static DOWN: (i8, i8) = (0, 1);
-
 pub fn part2(input: &str) -> usize {
     let field = parse(input);
     let visible = find_candidates(&field);
-
+    let s = field.len();
     let mut highest_distance = 0;
     for candidate in visible {
         let height = field[candidate.1][candidate.0];
-        let (mut x, mut y) = candidate;
-        let mut distances = vec![];
-        for direction in [UP, DOWN, LEFT, RIGHT].iter() {
-            let mut distance = 0;
-            loop {
-                if x == 0 || y == 0 || x == field[0].len() - 1 || y == field.len() - 1 {
-                    x = candidate.0;
-                    y = candidate.1;
-                    break;
-                }
-                distance += 1;
-                x = (x as i8 + direction.0) as usize;
-                y = (y as i8 + direction.1) as usize;
-                if height > field[y][x] {
-                    continue;
-                } else {
-                    x = candidate.0;
-                    y = candidate.1;
-                    break;
-                }
+        let (x, y) = candidate;
+        if x == 0 || y == 0 || x == s - 1 || y == s - 1 {
+            continue;
+        }
+        let mut acc = 1;
+        // left
+        for (distance, tree_pos) in (0..x).rev().enumerate() {
+            if height <= field[y][tree_pos] {
+                acc *= distance + 1;
+                break;
             }
-            distances.push(distance);
+            if tree_pos == 0 {
+                acc *= distance + 1;
+            }
         }
-        let new_score = distances.iter().product();
-        if new_score > highest_distance {
-            highest_distance = new_score;
+
+        // right
+        for (distance, tree_pos) in (x + 1..s).enumerate() {
+            if height <= field[y][tree_pos] {
+                acc *= distance + 1;
+                break;
+            }
+            if tree_pos == s - 1 {
+                acc *= distance + 1;
+            }
         }
+        // up
+        for (distance, tree_pos) in (0..y).rev().enumerate() {
+            if height <= field[tree_pos][x] {
+                acc *= distance + 1;
+                break;
+            }
+            if tree_pos == 0 {
+                acc *= distance + 1;
+            }
+        }
+        // down
+        for (distance, tree_pos) in (y + 1..s).enumerate() {
+            if height <= field[tree_pos][x] {
+                acc *= distance + 1;
+                break;
+            }
+            if tree_pos == s - 1 {
+                acc *= distance + 1;
+            }
+        }
+
+        highest_distance = highest_distance.max(acc);
     }
     highest_distance
 }

@@ -1,19 +1,19 @@
 use std::collections::HashSet;
 
-pub fn parse(input: &str) -> Vec<Vec<i8>> {
-    let mut field: Vec<Vec<i8>> = vec![];
+pub fn parse(input: &str) -> Vec<Vec<u8>> {
+    let mut field: Vec<Vec<u8>> = vec![];
     input
         .lines()
-        .for_each(|line| field.push(line.chars().map(|c| (c as u8 - b'0') as i8).collect()));
+        .for_each(|line| field.push(line.chars().map(|c| c as u8).collect()));
     field
 }
 
-pub fn find_candidates(field: &[Vec<i8>]) -> HashSet<(usize, usize)> {
+pub fn find_candidates(field: &[Vec<u8>]) -> HashSet<(usize, usize)> {
     let mut visible: HashSet<(usize, usize)> = HashSet::new();
 
     for x in 0..field[0].len() {
         // down
-        let mut current_height = -1;
+        let mut current_height = 0;
         for (y, row) in field.iter().enumerate() {
             if row[x] > current_height {
                 visible.insert((x, y));
@@ -21,7 +21,7 @@ pub fn find_candidates(field: &[Vec<i8>]) -> HashSet<(usize, usize)> {
             }
         }
         // up
-        current_height = -1;
+        current_height = 0;
         for (y, row) in field.iter().enumerate().rev() {
             if row[x] > current_height {
                 visible.insert((x, y));
@@ -32,7 +32,7 @@ pub fn find_candidates(field: &[Vec<i8>]) -> HashSet<(usize, usize)> {
 
     for (y, line) in field.iter().enumerate() {
         // right
-        line.iter().enumerate().fold(-1, |height, (x, tree)| {
+        line.iter().enumerate().fold(0, |height, (x, tree)| {
             if tree > &height {
                 visible.insert((x, y));
                 *tree
@@ -42,7 +42,7 @@ pub fn find_candidates(field: &[Vec<i8>]) -> HashSet<(usize, usize)> {
         });
 
         // left
-        line.iter().enumerate().rev().fold(-1, |height, (x, tree)| {
+        line.iter().enumerate().rev().fold(0, |height, (x, tree)| {
             if tree > &height {
                 visible.insert((x, y));
                 *tree

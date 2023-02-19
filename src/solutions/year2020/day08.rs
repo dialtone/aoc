@@ -20,8 +20,6 @@
 //   4 (4.00%) high mild
 //   3 (3.00%) high severe
 
-use super::*;
-
 pub fn part1(input: &Vec<(&str, isize)>) -> isize {
     let (_, acc) = compute(input);
     acc
@@ -76,7 +74,7 @@ pub fn part2(oinput: &Vec<(&str, isize)>) -> isize {
     }
 }
 
-pub fn parse(s: &String) -> Vec<(&str, isize)> {
+pub fn parse(s: &str) -> Vec<(&str, isize)> {
     let mut program = Vec::new();
     for line in s.lines() {
         // If you collect here you'll make this almost 10x slower
@@ -92,6 +90,7 @@ pub fn parse(s: &String) -> Vec<(&str, isize)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day08() {

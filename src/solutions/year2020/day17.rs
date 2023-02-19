@@ -2,7 +2,6 @@
 // day17 part 2            time:   [487.51 ms 490.13 ms 492.92 ms]
 // https://github.com/smmalis37/aoc2020/blob/main/src/days/day17.rs
 // this ^ is a much more efficient way of doing it.
-use super::*;
 use std::collections::*;
 
 pub fn part1(input: &str) -> usize {
@@ -182,6 +181,7 @@ pub fn part2(s: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn neighbors_test() {

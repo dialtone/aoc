@@ -1,8 +1,6 @@
 // day10 parse             time:   [2.1125 us 2.1386 us 2.1670 us]
 // day10 part 1            time:   [848.92 ns 859.54 ns 872.40 ns]
 // day10 part 2            time:   [1.1545 us 1.1669 us 1.1816 us]
-use super::*;
-
 use num_integer::binomial;
 
 type Input = String;
@@ -66,6 +64,7 @@ pub fn parse(s: &Input) -> Parsed {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day10() {

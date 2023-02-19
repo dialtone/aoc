@@ -1,5 +1,3 @@
-use super::*;
-
 type Input = String;
 type Time = usize;
 type Parsed = Vec<usize>;
@@ -57,7 +55,7 @@ pub fn parse(s: &Input) -> (Time, Parsed) {
         time,
         l.next()
             .unwrap()
-            .split(",")
+            .split(',')
             .map(|i| i.parse().unwrap_or(0))
             .collect(),
     )
@@ -66,13 +64,14 @@ pub fn parse(s: &Input) -> (Time, Parsed) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day13() {
         let input = "939
 7,13,x,x,59,x,31,19"
             .to_owned();
-        let (goal, buses) = parse(&input);
+        let (_, buses) = parse(&input);
         // assert_eq!(part1(goal, &buses), 295);
         assert_eq!(part2(buses), 1068781);
     }

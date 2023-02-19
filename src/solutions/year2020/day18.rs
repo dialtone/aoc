@@ -1,8 +1,6 @@
 // day18 part 1            time:   [357.98 us 360.82 us 364.22 us]
 // day18 part 2            time:   [448.65 us 456.22 us 465.16 us]
 
-use super::*;
-
 pub fn part2(input: &str) -> usize {
     let mut sum = 0;
     for line in input.lines() {
@@ -98,6 +96,7 @@ pub fn part1(s: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day18() {

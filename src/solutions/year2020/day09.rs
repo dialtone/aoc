@@ -13,8 +13,6 @@
 //   6 (6.00%) high mild
 //   8 (8.00%) high severe
 
-use super::*;
-
 type Input = String;
 type Parsed = Vec<usize>;
 
@@ -70,6 +68,7 @@ pub fn parse(s: &Input) -> Parsed {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day09() {

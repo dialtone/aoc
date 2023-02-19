@@ -63,7 +63,7 @@ pub fn part2(input: &Parsed) -> usize {
         match *op {
             Operation::Mask(mask) => {
                 or_mask = 0;
-                float_masks = Vec::new();
+                // float_masks = Vec::new();
                 let mut or_floats = Vec::new();
                 for (i, c) in mask.chars().enumerate() {
                     match c {

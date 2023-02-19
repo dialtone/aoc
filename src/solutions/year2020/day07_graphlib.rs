@@ -1,4 +1,3 @@
-use super::*;
 use petgraph::{graphmap::DiGraphMap, EdgeDirection::*};
 use std::collections::{HashSet, VecDeque};
 
@@ -60,6 +59,7 @@ pub fn parse(s: &String) -> DiGraphMap<&str, usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day07_graph() {

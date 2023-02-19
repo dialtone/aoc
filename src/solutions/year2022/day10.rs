@@ -53,12 +53,12 @@ pub fn part2(input: &[u8]) -> usize {
         }
     });
 
-    // let mut out = stdout().lock();
-    // for row in crt.chunks(40) {
-    //     // FZBPBFZF
-    //     out.write_all(row).unwrap();
-    //     out.write_all(&[b'\n']).unwrap();
-    // }
+    let mut out = stdout().lock();
+    for row in crt.chunks(40) {
+        // FZBPBFZF
+        out.write_all(row).unwrap();
+        out.write_all(&[b'\n']).unwrap();
+    }
 
     0
 }

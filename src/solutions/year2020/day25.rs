@@ -1,6 +1,4 @@
 // day25 part 1            time:   [95.715 ms 97.089 ms 98.552 ms]
-use super::*;
-
 pub fn part1(input: &str) -> usize {
     let mut pubkeys = input.lines();
 
@@ -41,6 +39,7 @@ fn get_loop_size_from_pubkey(pubkey: usize) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day25() {

@@ -72,6 +72,7 @@ fn join_all_tiles(tiles: &Vec<Vec<Tile>>, spacer: &str) -> Tile {
     joined.into_iter().map(|row| row.join(spacer)).collect()
 }
 
+#[allow(dead_code)]
 fn printgrid(full_grid: &Vec<Vec<Tile>>) {
     let single_tile_rows = full_grid[0][0].len();
     let single_tile_cols = full_grid[0][0][0].len();

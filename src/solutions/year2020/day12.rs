@@ -2,8 +2,6 @@
 // day12 part 1            time:   [6.9036 us 7.0104 us 7.1657 us]
 // day12 part 2            time:   [6.4478 us 6.4916 us 6.5392 us]
 
-use super::*;
-
 type Input = String;
 type Move = (u8, isize);
 type Parsed = Vec<Move>;
@@ -136,6 +134,7 @@ pub fn parse(s: &Input) -> Parsed {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day12() {

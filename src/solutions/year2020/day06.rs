@@ -1,9 +1,8 @@
-use super::*;
 use std::collections::BTreeSet;
 use std::iter::FromIterator;
 
 // day6 parse              time:   [158.82 us 161.46 us 164.61 us]
-pub fn parse(input: &String) -> Vec<Vec<u32>> {
+pub fn parse(input: &str) -> Vec<Vec<u32>> {
     input
         .split("\n\n")
         .map(|rows| {
@@ -15,7 +14,7 @@ pub fn parse(input: &String) -> Vec<Vec<u32>> {
 }
 
 // time:   [57.423 us 58.066 us 58.848 us]
-pub fn part1(input: &String) -> u32 {
+pub fn part1(input: &str) -> u32 {
     input
         .split("\n\n")
         .map(|rows| {
@@ -69,7 +68,7 @@ pub fn part1(input: &String) -> u32 {
 // }
 
 // day6 part 2             time:   [1.2361 ms 1.2543 ms 1.2765 ms]
-pub fn part2(input: &String) -> usize {
+pub fn part2(input: &str) -> usize {
     input
         .split("\n\n")
         .map(|answers| {
@@ -95,6 +94,7 @@ pub fn part2(input: &String) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day06() {

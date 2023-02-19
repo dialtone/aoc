@@ -44,8 +44,6 @@
 //     }
 //     seen.insert(decks);
 
-use super::*;
-
 use std::collections::*;
 
 pub fn part1(input: &str) -> usize {
@@ -173,6 +171,7 @@ fn play_game(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day22() {

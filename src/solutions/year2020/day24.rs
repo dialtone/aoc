@@ -1,7 +1,5 @@
 // day24 part 1            time:   [359.49 us 363.21 us 367.76 us]
 // day24 part 2            time:   [65.029 ms 65.830 ms 66.745 ms]
-use super::*;
-
 use std::collections::*;
 
 type Path<'a> = Vec<&'a [u8]>;
@@ -88,9 +86,7 @@ pub fn part2(input: &str) -> usize {
         }
 
         for (&tile_pos, &black_neighbors) in cnts.iter() {
-            if black_neighbors == 2 {
-                next.insert(tile_pos);
-            } else if black_neighbors == 1 && last.contains(&tile_pos) {
+            if black_neighbors == 2 || (black_neighbors == 1 && last.contains(&tile_pos)) {
                 next.insert(tile_pos);
             }
         }
@@ -104,6 +100,7 @@ pub fn part2(input: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day24() {

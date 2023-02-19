@@ -18,7 +18,6 @@
 //   5 (5.00%) high mild
 //   3 (3.00%) high severe
 
-use super::*;
 use std::collections::{HashMap, HashSet, VecDeque};
 
 pub fn part1(input: &HashMap<&str, Vec<&str>>) -> usize {
@@ -115,6 +114,7 @@ pub fn parse_right(s: &String) -> HashMap<&str, Vec<(usize, &str)>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day07() {

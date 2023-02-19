@@ -1,6 +1,5 @@
 // day19 part 1            time:   [2.0560 ms 2.0845 ms 2.1163 ms]
 // day19 part 2            time:   [4.9350 ms 4.9887 ms 5.0485 ms]
-use super::*;
 use std::collections::*;
 
 #[derive(Debug, Clone)]
@@ -147,6 +146,7 @@ fn matches(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day19() {

@@ -2,7 +2,6 @@
 // day11 part 1            time:   [7.3735 ms 7.4709 ms 7.5858 ms]
 // day11 part 2            time:   [15.363 ms 15.437 ms 15.515 ms]
 
-use super::*;
 type Input = String;
 type Parsed = Vec<Vec<char>>;
 
@@ -17,6 +16,7 @@ static ADJACIENTS: [(isize, isize); 8] = [
     (1, 1),
 ];
 
+#[allow(dead_code)]
 fn printmap(m: &Parsed) {
     for line in m {
         println!("{}", line.iter().collect::<String>());
@@ -179,6 +179,7 @@ pub fn parse(s: &Input) -> Parsed {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day09() {

@@ -1,6 +1,4 @@
-use super::*;
-
-pub fn part1(input: &String) -> usize {
+pub fn part1(input: &str) -> usize {
     input
         .lines()
         .map(|row| {
@@ -14,7 +12,7 @@ pub fn part1(input: &String) -> usize {
         .unwrap()
 }
 
-pub fn part2(input: &String) -> usize {
+pub fn part2(input: &str) -> usize {
     let mut seats = input
         .lines()
         .map(|row| {
@@ -39,6 +37,7 @@ pub fn part2(input: &String) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solutions::get_input;
 
     #[test]
     fn test_day05() {

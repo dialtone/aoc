@@ -93,8 +93,28 @@ pub fn part1(input: &[u8]) -> usize {
     inspections.iter().rev().take(2).product::<usize>()
 }
 
+// year 22 day11 part 2    time:   [2.7470 ms 2.7531 ms 2.7610 ms]
 pub fn part2(input: &[u8]) -> usize {
-    todo!();
+    let mut monkeys = parse(input);
+    let mut inspections: Vec<usize> = vec![0; monkeys.len()];
+
+    let mcm = monkeys.iter().map(|m| m.div).product::<usize>();
+    for _ in 0..10_000 {
+        for i in 0..monkeys.len() {
+            while let Some(item) = monkeys[i].stack.pop_front() {
+                inspections[i] += 1;
+                let new_item = monkeys[i].op.1(monkeys[i].op.0, item) % mcm;
+                let throw_to = if new_item % monkeys[i].div == 0 {
+                    monkeys[i].conditions.0
+                } else {
+                    monkeys[i].conditions.1
+                };
+                monkeys[throw_to].stack.push_back(new_item);
+            }
+        }
+    }
+    inspections.sort();
+    inspections.iter().rev().take(2).product::<usize>()
 }
 
 #[cfg(test)]
@@ -132,14 +152,14 @@ Monkey 3:
     If true: throw to monkey 0
     If false: throw to monkey 1";
         assert_eq!(part1(input.as_bytes()), 10605);
-        // assert_eq!(part2(input.as_bytes()), 0);
+        assert_eq!(part2(input.as_bytes()), 2713310158);
     }
 
     #[test]
     fn day11() {
         let input = get_input(2022, 11).unwrap();
         assert_eq!(part1(input.as_bytes()), 58786);
-        // assert_eq!(part2(input.as_bytes()), 0);
+        assert_eq!(part2(input.as_bytes()), 14952185856);
     }
 }
 

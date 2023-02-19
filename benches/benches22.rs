@@ -41,8 +41,12 @@ fn bench_22day08(c: &mut Criterion) {
 fn bench_22day09(c: &mut Criterion) {
     use aoc::solutions::year2022::day09::{part1, part2};
     let raw_input = aoc::input::get_input(2022, 9).unwrap();
-    c.bench_function("year 22 day09 part 1", |b| b.iter(|| part1(&raw_input)));
-    c.bench_function("year 22 day09 part 2", |b| b.iter(|| part2(&raw_input)));
+    c.bench_function("year 22 day09 part 1", |b| {
+        b.iter(|| part1(raw_input.as_bytes()))
+    });
+    c.bench_function("year 22 day09 part 2", |b| {
+        b.iter(|| part2(raw_input.as_bytes()))
+    });
 }
 
 criterion_group!(

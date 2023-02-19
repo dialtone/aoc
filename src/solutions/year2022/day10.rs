@@ -18,13 +18,7 @@ pub fn part1(input: &[u8]) -> i32 {
 
     let mut cmd = None;
     for cycle in 1.. {
-        if cycle == 20
-            || cycle == 60
-            || cycle == 100
-            || cycle == 140
-            || cycle == 180
-            || cycle == 220
-        {
+        if cycle == 20 + 40 * (cycle / 40) {
             observations += cycle * x;
         }
 

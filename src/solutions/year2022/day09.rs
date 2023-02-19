@@ -39,7 +39,7 @@ pub fn mov_t(h: (i32, i32), mut t: (i32, i32)) -> (i32, i32) {
         (x, y) if x.abs() == 1 => {
             t = (t.0 + x, t.1 + (y / 2));
         }
-        (x, y) if x.abs() == 2 => {
+        (x, y) if x.abs() == 2 && y.abs() == 2 => {
             t = (t.0 + (x / 2), t.1 + (y / 2));
         }
         _ => {

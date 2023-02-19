@@ -1,7 +1,5 @@
 //
-
-// year 22 day10 part 1    time:   [1.3668 µs 1.3719 µs 1.3781 µs]
-pub fn part1(input: &[u8]) -> i32 {
+pub fn cpu(input: &[u8], mut fun: impl FnMut(i32, i32)) {
     let mut program = input
         .split(|c| c == &b'\n')
         .filter(|l| !l.is_empty())
@@ -14,14 +12,10 @@ pub fn part1(input: &[u8]) -> i32 {
         });
 
     let mut x: i32 = 1;
-    let mut observations = 0;
 
     let mut cmd = None;
     for cycle in 1.. {
-        if cycle == 20 + 40 * (cycle / 40) {
-            observations += cycle * x;
-        }
-
+        fun(cycle, x);
         if let Some((_, n)) = cmd {
             x += n;
             cmd = None;
@@ -33,45 +27,30 @@ pub fn part1(input: &[u8]) -> i32 {
             }
         }
     }
+}
+
+// year 22 day10 part 1    time:   [1.3668 µs 1.3719 µs 1.3781 µs]
+pub fn part1(input: &[u8]) -> i32 {
+    let mut observations = 0;
+    cpu(input, |cycle, x| {
+        if cycle == 20 + 40 * (cycle / 40) {
+            observations += cycle * x;
+        }
+    });
 
     observations
 }
 
 // year 22 day10 part 2    time:   [1.5127 µs 1.5151 µs 1.5182 µs]
 pub fn part2(input: &[u8]) -> usize {
-    let mut program = input
-        .split(|c| c == &b'\n')
-        .filter(|l| !l.is_empty())
-        .map(|line| {
-            if line.len() == 4 {
-                (line, 0)
-            } else {
-                (&line[..4], atoi::atoi::<i32>(&line[5..]).unwrap())
-            }
-        });
-
-    let mut x: i32 = 1;
     let mut crt: Vec<char> = vec!['.'; 240];
-
-    let mut cmd = None;
-    for cycle in 1.. {
+    cpu(input, |cycle, x| {
         let x_pos = (cycle - 1) % 40;
         if x_pos == x || x_pos == x + 1 || x_pos == x - 1 {
             let cursor = 40 * ((cycle - 1) / 40) + x_pos;
             crt[cursor as usize] = '#';
         }
-
-        if let Some((_, n)) = cmd {
-            x += n;
-            cmd = None;
-        } else {
-            cmd = match program.next() {
-                None => break,
-                Some((b"noop", _)) => None,
-                Some(cmd) => Some(cmd),
-            }
-        }
-    }
+    });
 
     // for row in 0..6 {
     //     // FZBPBFZF

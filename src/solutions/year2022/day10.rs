@@ -14,7 +14,7 @@ pub fn part1(input: &[u8]) -> i32 {
         });
 
     let mut x: i32 = 1;
-    let mut observations = vec![];
+    let mut observations = 0;
 
     let mut cmd = None;
     for cycle in 1.. {
@@ -25,7 +25,7 @@ pub fn part1(input: &[u8]) -> i32 {
             || cycle == 180
             || cycle == 220
         {
-            observations.push(cycle * x);
+            observations += cycle * x;
         }
 
         if let Some((_, n)) = cmd {
@@ -40,10 +40,10 @@ pub fn part1(input: &[u8]) -> i32 {
         }
     }
 
-    observations.iter().sum()
+    observations
 }
 
-// year 22 day10 part 2    time:   [1.7957 µs 1.8041 µs 1.8131 µs]
+// year 22 day10 part 2    time:   [1.5127 µs 1.5151 µs 1.5182 µs]
 pub fn part2(input: &[u8]) -> usize {
     let mut program = input
         .split(|c| c == &b'\n')
@@ -57,22 +57,10 @@ pub fn part2(input: &[u8]) -> usize {
         });
 
     let mut x: i32 = 1;
-    let mut observations = vec![];
-
     let mut crt: Vec<char> = vec!['.'; 240];
 
     let mut cmd = None;
     for cycle in 1.. {
-        if cycle == 20
-            || cycle == 60
-            || cycle == 100
-            || cycle == 140
-            || cycle == 180
-            || cycle == 220
-        {
-            observations.push(cycle * x);
-        }
-
         let x_pos = (cycle - 1) % 40;
         if x_pos == x || x_pos == x + 1 || x_pos == x - 1 {
             let cursor = 40 * ((cycle - 1) / 40) + x_pos;

@@ -1,3 +1,4 @@
+use std::io::{stdout, Write};
 //
 pub fn cpu(input: &[u8], mut fun: impl FnMut(i32, i32)) {
     let mut program = input
@@ -29,7 +30,7 @@ pub fn cpu(input: &[u8], mut fun: impl FnMut(i32, i32)) {
     }
 }
 
-// year 22 day10 part 1    time:   [1.3668 µs 1.3719 µs 1.3781 µs]
+// year 22 day10 part 1    time:   [1.2895 µs 1.2932 µs 1.2969 µs]
 pub fn part1(input: &[u8]) -> i32 {
     let mut observations = 0;
     cpu(input, |cycle, x| {
@@ -43,21 +44,20 @@ pub fn part1(input: &[u8]) -> i32 {
 
 // year 22 day10 part 2    time:   [1.5127 µs 1.5151 µs 1.5182 µs]
 pub fn part2(input: &[u8]) -> usize {
-    let mut crt: Vec<char> = vec!['.'; 240];
+    let mut crt: Vec<u8> = vec![b'.'; 240];
     cpu(input, |cycle, x| {
         let x_pos = (cycle - 1) % 40;
         if x_pos == x || x_pos == x + 1 || x_pos == x - 1 {
             let cursor = 40 * ((cycle - 1) / 40) + x_pos;
-            crt[cursor as usize] = '#';
+            crt[cursor as usize] = b'#';
         }
     });
 
-    // for row in 0..6 {
+    // let mut out = stdout().lock();
+    // for row in crt.chunks(40) {
     //     // FZBPBFZF
-    //     println!(
-    //         "{}",
-    //         crt[row * 40..row * 40 + 40].iter().collect::<String>()
-    //     );
+    //     out.write_all(row).unwrap();
+    //     out.write_all(&[b'\n']).unwrap();
     // }
 
     0

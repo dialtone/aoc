@@ -71,6 +71,14 @@ pub fn parse(input: &[u8]) -> Vec<Monkey> {
     monkeys
 }
 
+fn go_to_top() {
+    print!("{}[0;0H", 27 as char);
+}
+
+fn clear_screen() {
+    print!("{}[2J", 27 as char);
+}
+
 // year 22 day11 part 1    time:   [6.3379 µs 6.3534 µs 6.3709 µs]
 pub fn part1(input: &[u8]) -> usize {
     let mut monkeys = parse(input);
@@ -99,10 +107,15 @@ pub fn part2(input: &[u8]) -> usize {
     let mut inspections: Vec<usize> = vec![0; monkeys.len()];
 
     let mcm = monkeys.iter().map(|m| m.div).product::<usize>();
+    clear_screen();
+    go_to_top();
+
     for _ in 0..10_000 {
         for i in 0..monkeys.len() {
             while let Some(item) = monkeys[i].stack.pop_front() {
                 inspections[i] += 1;
+                go_to_top();
+                println!("{:?}", inspections);
                 let new_item = monkeys[i].op.1(monkeys[i].op.0, item) % mcm;
                 let throw_to = if new_item % monkeys[i].div == 0 {
                     monkeys[i].conditions.0

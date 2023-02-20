@@ -1,10 +1,9 @@
 // use crate::solutions::clear_screen;
 // use crate::solutions::go_to_top;
-use std::collections::VecDeque;
 
 #[derive(Debug)]
 pub struct Monkey {
-    pub stack: VecDeque<usize>,
+    pub stack: Vec<usize>,
     pub op: (usize, fn(usize, usize) -> usize),
     pub div: usize,
     pub conditions: (usize, usize),
@@ -28,7 +27,7 @@ pub fn parse(input: &[u8]) -> Vec<Monkey> {
             .split(|c| c == &b',')
             .map(|it| if it[0] == b' ' { &it[1..] } else { it })
             .map(|it| atoi::atoi(it).unwrap())
-            .collect::<VecDeque<usize>>();
+            .collect::<Vec<usize>>();
 
         // ops
         line = input.next().unwrap();
@@ -73,13 +72,15 @@ pub fn parse(input: &[u8]) -> Vec<Monkey> {
     monkeys
 }
 
-// year 22 day11 part 1    time:   [6.3379 µs 6.3534 µs 6.3709 µs]
+// year 22 day11 part 1    time:   [4.9819 µs 4.9915 µs 5.0028 µs]
 pub fn part1(input: &[u8]) -> usize {
     let mut monkeys = parse(input);
     let mut inspections: Vec<usize> = vec![0; monkeys.len()];
     for _ in 0..20 {
         for i in 0..monkeys.len() {
-            while let Some(item) = monkeys[i].stack.pop_front() {
+            let len = monkeys[i].stack.len();
+            for j in 0..len {
+                let item = monkeys[i].stack[j];
                 inspections[i] += 1;
                 let new_item = monkeys[i].op.1(monkeys[i].op.0, item) / 3;
                 let throw_to = if new_item % monkeys[i].div == 0 {
@@ -87,15 +88,16 @@ pub fn part1(input: &[u8]) -> usize {
                 } else {
                     monkeys[i].conditions.1
                 };
-                monkeys[throw_to].stack.push_back(new_item);
+                monkeys[throw_to].stack.push(new_item);
             }
+            monkeys[i].stack.clear();
         }
     }
     inspections.sort();
     inspections.iter().rev().take(2).product::<usize>()
 }
 
-// year 22 day11 part 2    time:   [2.7470 ms 2.7531 ms 2.7610 ms]
+// year 22 day11 part 2    time:   [2.0104 ms 2.0120 ms 2.0138 ms]
 pub fn part2(input: &[u8]) -> usize {
     let mut monkeys = parse(input);
     let mut inspections: Vec<usize> = vec![0; monkeys.len()];
@@ -106,7 +108,9 @@ pub fn part2(input: &[u8]) -> usize {
 
     for _ in 0..10_000 {
         for i in 0..monkeys.len() {
-            while let Some(item) = monkeys[i].stack.pop_front() {
+            let len = monkeys[i].stack.len();
+            for j in 0..len {
+                let item = monkeys[i].stack[j];
                 inspections[i] += 1;
                 // go_to_top();
                 // println!("{:?}", inspections);
@@ -116,8 +120,9 @@ pub fn part2(input: &[u8]) -> usize {
                 } else {
                     monkeys[i].conditions.1
                 };
-                monkeys[throw_to].stack.push_back(new_item);
+                monkeys[throw_to].stack.push(new_item);
             }
+            monkeys[i].stack.clear();
         }
     }
     inspections.sort();

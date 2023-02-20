@@ -61,8 +61,11 @@ fn bench22_day10(c: &mut Criterion) {
 }
 
 fn bench22_day11(c: &mut Criterion) {
-    use aoc::solutions::year2022::day11::{part1, part2};
+    use aoc::solutions::year2022::day11::{parse, part1, part2};
     let raw_input = aoc::input::get_input(2022, 11).unwrap();
+    c.bench_function("year 22 day11 parse", |b| {
+        b.iter(|| parse(raw_input.as_bytes()))
+    });
     c.bench_function("year 22 day11 part 1", |b| {
         b.iter(|| part1(raw_input.as_bytes()))
     });

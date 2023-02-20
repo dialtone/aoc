@@ -1,3 +1,5 @@
+// use crate::solutions::clear_screen;
+// use crate::solutions::go_to_top;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
@@ -71,14 +73,6 @@ pub fn parse(input: &[u8]) -> Vec<Monkey> {
     monkeys
 }
 
-fn go_to_top() {
-    print!("{}[0;0H", 27 as char);
-}
-
-fn clear_screen() {
-    print!("{}[2J", 27 as char);
-}
-
 // year 22 day11 part 1    time:   [6.3379 µs 6.3534 µs 6.3709 µs]
 pub fn part1(input: &[u8]) -> usize {
     let mut monkeys = parse(input);
@@ -107,15 +101,15 @@ pub fn part2(input: &[u8]) -> usize {
     let mut inspections: Vec<usize> = vec![0; monkeys.len()];
 
     let mcm = monkeys.iter().map(|m| m.div).product::<usize>();
-    clear_screen();
-    go_to_top();
+    // clear_screen();
+    // go_to_top();
 
     for _ in 0..10_000 {
         for i in 0..monkeys.len() {
             while let Some(item) = monkeys[i].stack.pop_front() {
                 inspections[i] += 1;
-                go_to_top();
-                println!("{:?}", inspections);
+                // go_to_top();
+                // println!("{:?}", inspections);
                 let new_item = monkeys[i].op.1(monkeys[i].op.0, item) % mcm;
                 let throw_to = if new_item % monkeys[i].div == 0 {
                     monkeys[i].conditions.0
@@ -175,76 +169,3 @@ Monkey 3:
         assert_eq!(part2(input.as_bytes()), 14952185856);
     }
 }
-
-// pub fn parse(input: &[u8]) -> Vec<Monkey> {
-//     let mut monkeys = vec![];
-//
-//     let mut stack: Vec<usize> = vec![];
-//     let mut operation: (usize, fn(usize, usize) -> usize) = (0, |a, _| a);
-//     let mut divisible = 0;
-//     let mut conditions: (usize, usize) = (0, 0);
-//     let mut condition = 0;
-//
-//     for line in input.split(|c| c == &b'\n') {
-//         if line.is_empty() {
-//             // finish_monkey
-//             continue;
-//         }
-//
-//         if &line[..4] == b"Monk" {
-//             // new monkey
-//             continue;
-//         }
-//
-//         if &line[..4] == b"  St" {
-//             stack = line[line.iter().position(|c| c == &b':').unwrap() + 1..]
-//                 .split(|c| c == &b',')
-//                 .map(|it| if it[0] == b' ' { &it[1..] } else { it })
-//                 .map(|it| atoi::atoi(it).unwrap())
-//                 .collect();
-//         }
-//
-//         if &line[..4] == b"  Op" {
-//             let mut op_and_num = line[24..].split(|c| c == &b' ');
-//             let op = op_and_num.next().unwrap();
-//             let num = op_and_num.next().unwrap();
-//             let fun: (usize, fn(usize, usize) -> usize) = match (op[0], num) {
-//                 (b'*', b"old") => (1, |nn, old| nn * old * old),
-//                 (b'*', n) => {
-//                     let no = atoi::atoi(n).unwrap();
-//                     (no, |nn, old| nn * old)
-//                 }
-//                 (b'+', n) => {
-//                     let no = atoi::atoi(n).unwrap();
-//                     (no, |nn, old| nn + old)
-//                 }
-//                 _ => {
-//                     unreachable!();
-//                 }
-//             };
-//             operation = fun;
-//         }
-//
-//         if &line[..4] == b"Te" {
-//             divisible = atoi::atoi(&line[21..]).unwrap();
-//         }
-//
-//         if line[7] == b't' {
-//             condition = atoi::atoi(&line[30..]).unwrap();
-//         }
-//
-//         if line[7] == b'f' {
-//             conditions = (condition, atoi::atoi(&line[30..]).unwrap());
-//         }
-//
-//         monkeys.push(Monkey {
-//             stack,
-//             op: operation,
-//             div: divisible,
-//             conditions,
-//         });
-//     }
-//
-//     monkeys
-// }
-//

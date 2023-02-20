@@ -14,3 +14,13 @@ pub fn get_solution(year: u32, day: u32, part: u32) -> fn(&[u8]) -> usize {
         _ => todo!(),
     }
 }
+
+#[allow(dead_code)]
+pub(crate) fn go_to_top() {
+    print!("{}[0;0H", 27 as char);
+}
+
+#[allow(dead_code)]
+pub(crate) fn clear_screen() {
+    print!("{}[2J", 27 as char);
+}

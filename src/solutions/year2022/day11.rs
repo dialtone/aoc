@@ -254,14 +254,14 @@ Monkey 3:
   Test: divisible by 17
     If true: throw to monkey 0
     If false: throw to monkey 1";
-        // assert_eq!(part1(input.as_bytes()), 10605);
+        assert_eq!(part1(input.as_bytes()), 10605);
         assert_eq!(part2(input.as_bytes()), 2713310158);
     }
 
-    // #[test]
-    // fn test() {
-    //     let input = get_input(2022, 11).unwrap();
-    //     assert_eq!(part1(input.as_bytes()), 58786);
-    //     assert_eq!(part2(input.as_bytes()), 14952185856);
-    // }
+    #[test]
+    fn test() {
+        let input = get_input(2022, 11).unwrap();
+        assert_eq!(part1(input.as_bytes()), 58786);
+        assert_eq!(part2(input.as_bytes()), 14952185856);
+    }
 }

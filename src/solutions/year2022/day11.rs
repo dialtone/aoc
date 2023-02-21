@@ -136,7 +136,7 @@ pub fn part2(input: &[u8]) -> usize {
                             monkeys[i].conditions.1
                         };
 
-                        let throw_to1 = if new_rem[0] == 0 {
+                        let throw_to1 = if new_rem[1] == 0 {
                             monkeys[i].conditions.0
                         } else {
                             monkeys[i].conditions.1
@@ -165,7 +165,7 @@ pub fn part2(input: &[u8]) -> usize {
                             monkeys[i].conditions.1
                         };
 
-                        let throw_to1 = if new_rem[0] == 0 {
+                        let throw_to1 = if new_rem[1] == 0 {
                             monkeys[i].conditions.0
                         } else {
                             monkeys[i].conditions.1
@@ -195,7 +195,7 @@ pub fn part2(input: &[u8]) -> usize {
                             monkeys[i].conditions.1
                         };
 
-                        let throw_to1 = if new_rem[0] == 0 {
+                        let throw_to1 = if new_rem[1] == 0 {
                             monkeys[i].conditions.0
                         } else {
                             monkeys[i].conditions.1

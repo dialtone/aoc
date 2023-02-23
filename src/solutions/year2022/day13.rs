@@ -2,7 +2,92 @@ use itertools::Itertools;
 use std::cmp::Ordering;
 
 fn compare(left: &&[u8], right: &&[u8]) -> Ordering {
-    compare_(left, right, 0, 0)
+    // compare_(left, right, 0, 0)
+    compare_2(left, right)
+}
+fn compare_2(left: &&[u8], right: &&[u8]) -> Ordering {
+    let mut wrapped_left = 0;
+    let mut wrapped_right = 0;
+
+    let mut left_idx = 0;
+    let mut right_idx = 0;
+
+    let left_len = left.len();
+    let right_len = right.len();
+
+    while left_len > left_idx && right_len > right_idx {
+        match (left[left_idx], right[right_idx]) {
+            (b',', b',') if wrapped_left > 0 => return Ordering::Less,
+            (b',', b',') if wrapped_right > 0 => return Ordering::Greater,
+
+            (x, y) if x == y => {
+                left_idx += 1;
+                right_idx += 1
+            }
+
+            (b']', x) if x != b']' => {
+                if wrapped_right > 0 {
+                    left_idx += 1;
+                    wrapped_right -= 1
+                } else {
+                    return Ordering::Less;
+                }
+            }
+
+            (x, b']') if x != b']' => {
+                if wrapped_left > 0 {
+                    right_idx += 1;
+                    wrapped_left -= 1;
+                } else {
+                    return Ordering::Greater;
+                }
+            }
+
+            (b',', _) => return Ordering::Less,
+            (_, b',') => return Ordering::Greater,
+
+            // we have a comparison with a list but the item on the other side isn't a list, so it
+            // needs to be wrapped in one, and let's keep track of it.
+            (b'[', x) if x != b'[' => {
+                left_idx += 1;
+                wrapped_right += 1;
+            }
+            (x, b'[') if x != b'[' => {
+                right_idx += 1;
+                wrapped_left += 1;
+            }
+
+            (x, y) if x.is_ascii_digit() && y.is_ascii_digit() => {
+                match (
+                    left[left_idx + 1].is_ascii_digit(),
+                    right[right_idx + 1].is_ascii_digit(),
+                ) {
+                    (true, true) => {
+                        left_idx += 2;
+                        right_idx += 2;
+                    }
+                    (false, true) => return Ordering::Less,
+                    (true, false) => return Ordering::Greater,
+                    (false, false) => {
+                        if x < y {
+                            return Ordering::Less;
+                        } else {
+                            return Ordering::Greater;
+                        }
+                    }
+                }
+            }
+            _ => unreachable!(),
+        }
+    }
+    if left_len - 1 == left_idx && right_len - 1 == right_idx {
+        return Ordering::Equal;
+    }
+    if left_len - 1 == left_idx {
+        Ordering::Less
+    } else {
+        Ordering::Greater
+    }
 }
 
 fn compare_(left: &&[u8], right: &&[u8], wrapped_left: u8, wrapped_right: u8) -> Ordering {
@@ -74,7 +159,8 @@ fn tostring(s: &[u8]) -> String {
     s.iter().map(|c| *c as char).collect()
 }
 
-// year 22 day13 part 1    time:   [11.120 µs 11.132 µs 11.145 µs] (recursive)
+// year 22 day13 part 1    time:   [11.936 µs 11.946 µs 11.956 µs] (recursive)
+// year 22 day13 part 1    time:   [11.278 µs 11.292 µs 11.310 µs]
 pub fn part1(input: &[u8]) -> usize {
     let mut ans = 0;
     for (i, (leftt, right)) in input
@@ -90,6 +176,8 @@ pub fn part1(input: &[u8]) -> usize {
     ans
 }
 
+// year 22 day13 part 2    time:   [52.422 µs 52.919 µs 53.471 µs] (recursive)
+// year 22 day13 part 2    time:   [42.365 µs 42.657 µs 42.937 µs]
 pub fn part2(input: &[u8]) -> usize {
     let mut v = input
         .split(|c| c == &b'\n')
@@ -177,7 +265,7 @@ mod tests {
         // 5526 too low
         // 5504 too low
         assert_eq!(part1(input.as_bytes()), 5555);
-        assert_eq!(part2(input.as_bytes()), 354);
+        assert_eq!(part2(input.as_bytes()), 22852);
     }
 }
 

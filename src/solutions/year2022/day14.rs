@@ -1,51 +1,35 @@
 use itertools::Itertools;
-use num::range_step_inclusive;
-use rustc_hash::FxHashSet;
 
-static GROUND: char = '#';
-static AIR: char = '.';
-static SAND: char = 'o';
+const W: usize = 800;
+const H: usize = 175;
 
-pub fn printmap(cave: &FxHashSet<(i16, i16)>) {
-    let minx = cave.iter().map(|(x, _)| *x).min().unwrap();
-    let maxx = cave.iter().map(|(x, _)| *x).max().unwrap();
-    let miny = 0;
-    let maxy = cave.iter().map(|(_, y)| *y).max().unwrap();
+type Cave = [[bool; W]; H];
 
-    println!();
-    for y in miny..=maxy {
-        for x in minx..=maxx {
-            if cave.contains(&(x, y)) {
-                print!("{}", GROUND);
-            } else {
-                print!("{}", AIR);
-            }
-        }
-        println!();
-    }
-}
+pub fn parse(input: &str) -> (Cave, usize) {
+    let mut cave: Cave = [[false; W]; H];
 
-pub fn parse(input: &str) -> FxHashSet<(i16, i16)> {
-    let mut cave: FxHashSet<(i16, i16)> = FxHashSet::default();
+    let mut lowest = 0;
 
     for coords in input.lines().filter(|l| !l.is_empty()).map(|l| {
         l.split(" -> ").map(|coord| {
             coord
                 .split_once(',')
-                .map(|(x, y)| (x.parse::<i16>().unwrap(), y.parse::<i16>().unwrap()))
+                .map(|(x, y)| (x.parse::<usize>().unwrap(), y.parse::<usize>().unwrap()))
                 .unwrap()
         })
     }) {
         for (from, to) in coords.tuple_windows() {
+            lowest = lowest.max(from.1.max(to.1));
+
             match (from, to) {
                 ((fromx, fromy), (tox, toy)) if fromx == tox => {
-                    for y in range_step_inclusive(fromy, toy, if fromy > toy { -1 } else { 1 }) {
-                        cave.insert((fromx, y));
+                    for y in fromy.min(toy)..=fromy.max(toy) {
+                        cave[y][fromx] = true;
                     } // horizontal line
                 }
                 ((fromx, fromy), (tox, toy)) if fromy == toy => {
-                    for x in range_step_inclusive(fromx, tox, if fromx > tox { -1 } else { 1 }) {
-                        cave.insert((x, fromy));
+                    for x in fromx.min(tox)..=fromx.max(tox) {
+                        cave[fromy][x] = true;
                     } // Vertical line
                 }
                 _ => unreachable!(),
@@ -53,28 +37,23 @@ pub fn parse(input: &str) -> FxHashSet<(i16, i16)> {
         }
     }
 
-    cave
+    (cave, lowest)
 }
 
-// year 22 day14 part 1    time:   [377.12 µs 377.71 µs 378.39 µs]
+// year 22 day14 part 1    time:   [167.78 µs 167.95 µs 168.15 µs]
 pub fn part1(input: &str) -> usize {
-    let mut cave = parse(input);
-    // if a grain of sands goes beyond this y, we should stop computation as nothing else will
-    // stabilize
-    let maxy = cave.iter().map(|(_, y)| *y).max().unwrap();
-
-    // printmap(&cave);
+    let (mut cave, maxy) = parse(input);
+    let mut sand = 0;
 
     let start = (500, 0);
     let dirs = [(0, 1), (-1, 1), (1, 1)];
 
-    let walls = cave.len();
     let mut pos = start;
     while pos.1 <= maxy {
         let mut stable = true;
         for d in dirs {
-            let newpos = (pos.0 + d.0, pos.1 + d.1);
-            if cave.contains(&newpos) {
+            let newpos = ((pos.0 as isize + d.0) as usize, pos.1 + d.1);
+            if cave[newpos.1][newpos.0] {
                 continue;
             }
             pos = newpos;
@@ -82,34 +61,30 @@ pub fn part1(input: &str) -> usize {
             break;
         }
         if stable {
-            cave.insert(pos);
+            cave[pos.1][pos.0] = true;
             pos = start;
+            sand += 1;
         }
     }
 
-    // printmap(&cave);
-
-    cave.len() - walls
+    sand
 }
 
-// year 22 day14 part 2    time:   [16.963 ms 16.994 ms 17.028 ms]
+// year 22 day14 part 2    time:   [4.5934 ms 4.6069 ms 4.6231 ms]
 pub fn part2(input: &str) -> usize {
-    let mut cave = parse(input);
-
-    let maxy = cave.iter().map(|(_, y)| *y).max().unwrap() + 2;
-
-    // printmap(&cave);
+    let (mut cave, mut maxy) = parse(input);
+    let mut sand = 0;
+    maxy += 2;
 
     let start = (500, 0);
     let dirs = [(0, 1), (-1, 1), (1, 1)];
 
-    let walls = cave.len();
     let mut pos = start;
     loop {
         let mut stable = true;
         for d in dirs {
-            let newpos = (pos.0 + d.0, pos.1 + d.1);
-            if cave.contains(&newpos) || newpos.1 == maxy {
+            let newpos = ((pos.0 as isize + d.0) as usize, pos.1 + d.1);
+            if newpos.1 == maxy || cave[newpos.1][newpos.0] {
                 continue;
             }
             pos = newpos;
@@ -117,17 +92,16 @@ pub fn part2(input: &str) -> usize {
             break;
         }
         if stable {
+            sand += 1;
             if pos == start {
                 break;
             }
-            cave.insert(pos);
+            cave[pos.1][pos.0] = true;
             pos = start;
         }
     }
 
-    // printmap(&cave);
-
-    cave.len() - walls + 1
+    sand
 }
 
 #[cfg(test)]

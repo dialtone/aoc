@@ -70,37 +70,40 @@ pub fn part1(input: &str) -> usize {
     sand
 }
 
-// year 22 day14 part 2    time:   [4.5934 ms 4.6069 ms 4.6231 ms]
+// year 22 day14 part 2    time:   [547.19 µs 549.22 µs 551.80 µs]
 pub fn part2(input: &str) -> usize {
     let (mut cave, mut maxy) = parse(input);
     let mut sand = 0;
     maxy += 2;
 
     let start = (500, 0);
-    let dirs = [(0, 1), (-1, 1), (1, 1)];
+    let dirs = [(0isize, 1isize), (-1, 1), (1, 1)].as_slice();
 
-    let mut pos = start;
-    loop {
-        let mut stable = true;
-        for d in dirs {
-            let newpos = ((pos.0 as isize + d.0) as usize, pos.1 + d.1);
-            if newpos.1 == maxy || cave[newpos.1][newpos.0] {
-                continue;
-            }
-            pos = newpos;
-            stable = false;
-            break;
+    // let mut pos = start;
+    let mut q = Vec::with_capacity(200);
+    q.push((start, dirs));
+    while let Some((pos, next)) = q.pop() {
+        if pos.1 == maxy || cave[pos.1][pos.0] {
+            continue;
         }
-        if stable {
+
+        if let Some((dx, dy)) = next.first() {
+            q.push((pos, &next[1..]));
+            q.push((
+                (
+                    (pos.0 as isize + dx) as usize,
+                    (pos.1 as isize + dy) as usize,
+                ),
+                dirs,
+            ));
+        } else {
+            cave[pos.1][pos.0] = true;
             sand += 1;
             if pos == start {
-                break;
+                return sand;
             }
-            cave[pos.1][pos.0] = true;
-            pos = start;
         }
     }
-
     sand
 }
 

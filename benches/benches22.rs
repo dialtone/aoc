@@ -96,6 +96,13 @@ fn bench22_day13(c: &mut Criterion) {
     });
 }
 
+fn bench22_day14(c: &mut Criterion) {
+    use aoc::solutions::year2022::day14::{part1, part2};
+    let raw_input = aoc::input::get_input(2022, 14).unwrap();
+    c.bench_function("year 22 day14 part 1", |b| b.iter(|| part1(&raw_input)));
+    c.bench_function("year 22 day14 part 2", |b| b.iter(|| part2(&raw_input)));
+}
+
 criterion_group!(
     benches22,
     bench22_day05,
@@ -108,6 +115,7 @@ criterion_group!(
     bench22_day11,
     bench22_day12,
     bench22_day13,
+    bench22_day14,
 );
 
 criterion_main!(benches22);

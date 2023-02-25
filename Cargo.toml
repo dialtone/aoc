@@ -31,3 +31,4 @@ clap = { version = "4.1", features = ["derive"]}
 
 [dev-dependencies]
 criterion = "0.4"
+

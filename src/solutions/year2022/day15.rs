@@ -14,9 +14,8 @@ fn distance(p: Point, q: Point) -> i32 {
     (p.0 - q.0).abs() + (p.1 - q.1).abs()
 }
 
-pub fn parse(input: &str) -> (Vec<(Point, Point, i32)>, Point, Point) {
+pub fn parse(input: &str) -> Vec<(Point, Point, i32)> {
     let mut r = vec![];
-    let (mut minx, mut maxx, mut miny, mut maxy) = (0, 0, 0, 0);
 
     for line in input.lines().filter(|l| !l.is_empty()) {
         let (sensor, beacon) = line.split_once(": ").unwrap();
@@ -26,23 +25,42 @@ pub fn parse(input: &str) -> (Vec<(Point, Point, i32)>, Point, Point) {
         let beac = (bx.parse().unwrap(), by.parse().unwrap());
         let dist = distance(sens, beac);
 
-        minx = minx.min(sens.0 - dist);
-        minx = minx.min(beac.0);
-
-        maxx = maxx.max(sens.0 + dist);
-        maxx = maxx.max(beac.0);
-
-        miny = miny.min(sens.1 - dist);
-        miny = miny.min(beac.1);
-
-        maxy = maxy.max(sens.1 + dist);
-        maxy = maxy.max(beac.1);
-
         r.push((sens, beac, dist));
     }
 
-    (r, (minx, miny), (maxx, maxy))
+    r
 }
+
+// this is for the other slower alternatives
+// pub fn parse(input: &str) -> (Vec<(Point, Point, i32)>, Point, Point) {
+//     let mut r = vec![];
+//     let (mut minx, mut maxx, mut miny, mut maxy) = (0, 0, 0, 0);
+//
+//     for line in input.lines().filter(|l| !l.is_empty()) {
+//         let (sensor, beacon) = line.split_once(": ").unwrap();
+//         let (sx, sy) = &sensor[12..].split_once(", y=").unwrap();
+//         let (bx, by) = &beacon[23..].split_once(", y=").unwrap();
+//         let sens = (sx.parse().unwrap(), sy.parse().unwrap());
+//         let beac = (bx.parse().unwrap(), by.parse().unwrap());
+//         let dist = distance(sens, beac);
+//
+//         minx = minx.min(sens.0 - dist);
+//         minx = minx.min(beac.0);
+//
+//         maxx = maxx.max(sens.0 + dist);
+//         maxx = maxx.max(beac.0);
+//
+//         miny = miny.min(sens.1 - dist);
+//         miny = miny.min(beac.1);
+//
+//         maxy = maxy.max(sens.1 + dist);
+//         maxy = maxy.max(beac.1);
+//
+//         r.push((sens, beac, dist));
+//     }
+//
+//     (r, (minx, miny), (maxx, maxy))
+// }
 
 pub fn intersect(s: Point, d: i32, yline: i32) -> Option<(i32, i32)> {
     let remainder = d - (s.1 - yline).abs();
@@ -91,14 +109,37 @@ pub fn intersect(s: Point, d: i32, yline: i32) -> Option<(i32, i32)> {
 // 5..........#.............###..........
 // 6.........................#...........
 
+// 0012345678901234567890
+// 0##S##################
+// 1####################S
+// 2#############S#######
+// 3###############B#####
+// 4#####################
+// 5#####################
+// 6#####################
+// 7########S############
+// 8#####################
+// 9#####################
+// 0##B##################
+// 1S#############.######
+// 2#####################
+// 3#####################
+// 4############S#######S
+// 5#####################
+// 6#########SB##########
+// 7##############S######
+// 8##S##################
+// 9#####################
+// 0##########S######S###
+
 // the concept of this idea is that the distance of the sensor from the reference line
 // implies a certain amount of overlap, correlated with the distance, centered around the
 // sensor's x coord. This way we just need to check the y distance between line and sensor
 // and the whole thing is done with a handful of operations, solution here takes 0.2us with parsing
-// taking 3.9us
-// year 22 day15 part 1    time:   [4.1749 µs 4.1872 µs 4.2017 µs]
+// taking 3.5us
+// year 22 day15 part 1    time:   [3.7573 µs 3.7663 µs 3.7782 µs]
 pub fn part1(input: &str, y: i32) -> usize {
-    let (pairs, _topleft, _botright) = parse(input);
+    let pairs = parse(input);
     let mut removals: FxHashSet<i32> = FxHashSet::default();
 
     let mut intervals = Vec::with_capacity(pairs.len());
@@ -224,8 +265,36 @@ pub fn part1(input: &str, y: i32) -> usize {
     // no_source
 }
 
-pub fn part2(input: &str) -> usize {
-    dbg!(parse(input));
+// year 22 day15 part 2    time:   [250.90 ms 251.17 ms 251.48 ms]
+pub fn part2(input: &str, limit: i32) -> usize {
+    let pairs = parse(input);
+
+    let mut intervals = Vec::with_capacity(pairs.len());
+    for y in 0..=limit {
+        intervals.clear();
+        for (s, _, d) in pairs.iter().filter(|(s, _, d)| (s.1 - y).abs() < *d) {
+            if let Some((start, length)) = intersect(*s, *d, y) {
+                intervals.push((start, start + length - 1));
+            }
+        }
+        intervals.sort();
+
+        let mut overlaps = vec![intervals[0]];
+
+        for (start, stop) in intervals[1..].iter() {
+            let last = overlaps.last_mut().unwrap();
+            if last.1 >= *start && last.0 <= *stop {
+                *last = (last.0.min(*start).max(0), *stop.max(&last.1).min(&limit));
+            } else {
+                overlaps.push((*start.max(&0), *stop.min(&limit)));
+            }
+        }
+
+        if overlaps.len() == 2 {
+            return (overlaps[0].1 as usize + 1) * 4000000 + y as usize;
+        }
+    }
+
     0
 }
 
@@ -251,13 +320,13 @@ Sensor at x=16, y=7: closest beacon is at x=15, y=3
 Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3";
         assert_eq!(part1e(input), 26);
-        // assert_eq!(part2(input), 93);
+        assert_eq!(part2(input, 20), 500);
     }
 
     #[test]
     fn problem() {
         let input = get_input(2022, 15).unwrap();
         assert_eq!(part1p(&input), 4883971);
-        // assert_eq!(part2(&input), 27625);
+        assert_eq!(part2(&input, 4_000_000), 12691026767556);
     }
 }

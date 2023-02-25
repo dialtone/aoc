@@ -108,7 +108,9 @@ fn bench22_day15(c: &mut Criterion) {
     let raw_input = aoc::input::get_input(2022, 15).unwrap();
     c.bench_function("year 22 day15 parse", |b| b.iter(|| parse(&raw_input)));
     c.bench_function("year 22 day15 part 1", |b| b.iter(|| part1p(&raw_input)));
-    // c.bench_function("year 22 day15 part 2", |b| b.iter(|| part2(&raw_input)));
+    c.bench_function("year 22 day15 part 2", |b| {
+        b.iter(|| part2(&raw_input, 4_000_000))
+    });
 }
 
 criterion_group!(

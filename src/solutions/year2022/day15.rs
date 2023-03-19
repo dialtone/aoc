@@ -265,7 +265,10 @@ pub fn part1(input: &str, y: i32) -> usize {
     // no_source
 }
 
+// old version with an extra vec allocation
 // year 22 day15 part 2    time:   [250.90 ms 251.17 ms 251.48 ms]
+// current version without extra vec allocation
+// year 22 day15 part 2    time:   [176.76 ms 176.99 ms 177.27 ms]
 pub fn part2(input: &str, limit: i32) -> usize {
     let pairs = parse(input);
 
@@ -279,19 +282,19 @@ pub fn part2(input: &str, limit: i32) -> usize {
         }
         intervals.sort();
 
-        let mut overlaps = vec![intervals[0]];
-
+        let mut last = intervals[0];
+        let mut num = 0;
         for (start, stop) in intervals[1..].iter() {
-            let last = overlaps.last_mut().unwrap();
             if last.1 >= *start && last.0 <= *stop {
-                *last = (last.0.min(*start).max(0), *stop.max(&last.1).min(&limit));
+                last = (last.0.min(*start).max(0), *stop.max(&last.1).min(&limit));
             } else {
-                overlaps.push((*start.max(&0), *stop.min(&limit)));
+                num += 1;
+                last = (*start, *stop);
             }
         }
 
-        if overlaps.len() == 2 {
-            return (overlaps[0].1 as usize + 1) * 4000000 + y as usize;
+        if num == 1 {
+            return (last.0 as usize - 1) * 4000000 + y as usize;
         }
     }
 
@@ -320,7 +323,7 @@ Sensor at x=16, y=7: closest beacon is at x=15, y=3
 Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3";
         assert_eq!(part1e(input), 26);
-        assert_eq!(part2(input, 20), 500);
+        assert_eq!(part2(input, 20), 56000011);
     }
 
     #[test]
